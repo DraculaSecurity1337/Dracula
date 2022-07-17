@@ -4,7 +4,7 @@ if Dracula_version then
 end 
 
 --Set Version Here requeriment for the script to work
-Dracula_version = "20.962"
+Dracula_version = "20.963"
 
 menu.create_thread(function()
 
@@ -11546,10 +11546,12 @@ normalgod_mode3 =
     HealthOp.id,
     function(feat)
         if feat.on then
+            while feat.on then
+                audio.play_sound_from_coord(-1, "1st_Person_Transition", "PLAYER_SWITCH_CUSTOM_SOUNDSET") --Play sound
+            end
             me = player.player_id()
             ped.set_ped_max_health(player.get_player_ped(me), 99999999999999999999)
             ped.set_ped_health(player.get_player_ped(me), 99999999999999999999)
-            audio.play_sound_from_coord(-1, "1st_Person_Transition", "PLAYER_SWITCH_CUSTOM_SOUNDSET") --Play sound
             ped.clear_ped_blood_damage(player.get_player_ped(me))
             gameplay.set_override_weather(3)
             return HANDLER_CONTINUE
@@ -26084,6 +26086,7 @@ menu.add_feature("Auto Waypoint Tp", "toggle", misc.id, function(f)
 			if ui.get_waypoint_coord().x ~= 16000 then
 				local previous_position = player.get_player_coords(player.player_id())
 				local pos = v3(ui.get_waypoint_coord().x, ui.get_waypoint_coord().y, -100)
+                local player_heading = player.get_player_heading(pid)
 				if player.is_player_in_any_vehicle(player.player_id()) then
 					entity.set_entity_coords_no_offset(player.get_player_vehicle(player.player_id()), pos)
 				else
@@ -26094,20 +26097,68 @@ menu.add_feature("Auto Waypoint Tp", "toggle", misc.id, function(f)
 					system.yield(0)
 					if previous_position then
 						local success, float = gameplay.get_ground_z(player.get_player_coords(player.player_id()))
+                        while not graphics.has_named_ptfx_asset_loaded("scr_abattoir_ped_sliced") do
+                            graphics.request_named_ptfx_asset("scr_abattoir_ped_sliced")
+                            system.wait(0)
+                        end
 						if not success then
 							if player.is_player_in_any_vehicle(player.player_id()) then
 								utilities.request_control(player.get_player_vehicle(player.player_id()))
 								entity.set_entity_coords_no_offset(player.get_player_vehicle(player.player_id()), v3(player.get_player_coords(player.player_id()).x, player.get_player_coords(player.player_id()).y, player.get_player_coords(player.player_id()).z + 50))
-							else
+                                if graphics.has_named_ptfx_asset_loaded("scr_abattoir_ped_sliced") then
+                                    graphics.start_networked_ptfx_non_looped_at_coord(
+                                        "scr_abattoir_ped_sliced",
+                                        player.get_player_coords(pid),
+                                        v3(0, 0, player_heading),
+                                        1,
+                                        false,
+                                        false,
+                                        true
+                                    )
+                                end
+                            else
 								entity.set_entity_coords_no_offset(player.get_player_ped(player.player_id()), v3(player.get_player_coords(player.player_id()).x, player.get_player_coords(player.player_id()).y, player.get_player_coords(player.player_id()).z + 50))
-							end
+                                if graphics.has_named_ptfx_asset_loaded("scr_abattoir_ped_sliced") then
+                                    graphics.start_networked_ptfx_non_looped_at_coord(
+                                        "scr_abattoir_ped_sliced",
+                                        player.get_player_coords(pid),
+                                        v3(0, 0, player_heading),
+                                        1,
+                                        false,
+                                        false,
+                                        true
+                                    )
+                                end
+                            end
 						else
 							if player.is_player_in_any_vehicle(player.player_id()) then
 								utilities.request_control(player.get_player_vehicle(player.player_id()))
 								entity.set_entity_coords_no_offset(player.get_player_vehicle(player.player_id()), v3(player.get_player_coords(player.player_id()).x, player.get_player_coords(player.player_id()).y, float + 1))
-							else
+                                if graphics.has_named_ptfx_asset_loaded("scr_abattoir_ped_sliced") then
+                                    graphics.start_networked_ptfx_non_looped_at_coord(
+                                        "scr_abattoir_ped_sliced",
+                                        player.get_player_coords(pid),
+                                        v3(0, 0, player_heading),
+                                        1,
+                                        false,
+                                        false,
+                                        true
+                                    )
+                                end
+                            else
 								entity.set_entity_coords_no_offset(player.get_player_ped(player.player_id()), v3(player.get_player_coords(player.player_id()).x, player.get_player_coords(player.player_id()).y, float + 1))
-							end
+                                if graphics.has_named_ptfx_asset_loaded("scr_abattoir_ped_sliced") then
+                                    graphics.start_networked_ptfx_non_looped_at_coord(
+                                        "scr_abattoir_ped_sliced",
+                                        player.get_player_coords(pid),
+                                        v3(0, 0, player_heading),
+                                        1,
+                                        false,
+                                        false,
+                                        true
+                                    )
+                                end
+                            end
 							previous_position = nil
 						end
 						ui.set_waypoint_off()
