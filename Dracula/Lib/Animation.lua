@@ -47,7 +47,6 @@ local function HotkeyHandler(Params)
     
   
   function welcome(feat)
-  
       
   advier= menu.add_feature("11","toggle", everyone,function(k,pid)
       while k.on do
@@ -64,7 +63,7 @@ local function HotkeyHandler(Params)
       advier.hidden = true
       logo= menu.add_feature("11","toggle", everyone,function(k,pid)
         while k.on do
-            ui.set_text_color(0, 132, 255, 255)
+            ui.set_text_color(140, 0, 2, 255)
             ui.set_text_scale(1.5)
             ui.set_text_font(7)
             ui.set_text_centre(true)
@@ -76,13 +75,13 @@ local function HotkeyHandler(Params)
             ui.set_text_centre(true)
             ui.set_text_outline(true)
             ui.draw_text("To", v2(0.5, 0.4))
-            ui.set_text_color(0, 132, 255, 255)
+            ui.set_text_color(140, 0, 2, 255)
             ui.set_text_scale(1.5)
             ui.set_text_font(7)
             ui.set_text_centre(true)
             ui.set_text_outline(true)
             ui.draw_text("Dracula", v2(0.5, 0.48))
-            ui.set_text_color(0, 132, 255, 255)
+            ui.set_text_color(140, 0, 2, 255)
             ui.set_text_scale(0.7)
             ui.set_text_font(7)
             ui.set_text_centre(true)

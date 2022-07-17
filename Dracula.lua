@@ -4,7 +4,7 @@ if Dracula_version then
 end 
 
 --Set Version Here requeriment for the script to work
-Dracula_version = "20.968"
+Dracula_version = "20.969"
 
 menu.create_thread(function()
 
@@ -534,7 +534,7 @@ end
 local chat5 = menu.add_feature("Rockstar Admin Chat", "parent", main_menu.id)
 local selfplayer = menu.add_feature("Player Options", "parent", main_menu.id)
 local Tactical = menu.add_feature("Tactical Option", "parent", main_menu.id)
-local Protex = menu.add_feature("Protections", "parent", main_menu.id)
+local Protex = menu.add_feature("Vampiric Protections", "parent", main_menu.id)
 local Animations = menu.add_feature("Animations", "parent", main_menu.id)
 local Animations = menu.add_feature("Emotes", "parent", Animations.id)
 local vehicle = menu.add_feature("Vehicle Options", "parent", main_menu.id)
@@ -11546,14 +11546,16 @@ normalgod_mode3 =
     HealthOp.id,
     function(feat)
         if feat.on then
-            while feat.on do
-                audio.play_sound_from_coord(-1, "1st_Person_Transition", player.get_player_coords(player.player_id()), "PLAYER_SWITCH_CUSTOM_SOUNDSET", true, 9999, false)
-            end
             me = player.player_id()
             ped.set_ped_max_health(player.get_player_ped(me), 99999999999999999999)
             ped.set_ped_health(player.get_player_ped(me), 99999999999999999999)
             ped.clear_ped_blood_damage(player.get_player_ped(me))
             gameplay.set_override_weather(3)
+
+            while feat.on do
+                audio.play_sound_from_entity(-1, "1st_Person_Transition", player.get_player_ped(player.player_id()), "PLAYER_SWITCH_CUSTOM_SOUNDSET")
+                system.wait(1000)
+            end
             return HANDLER_CONTINUE
         else
             me = player.player_id()
@@ -25048,7 +25050,6 @@ end)
 HostOp = menu.add_feature("Host Option", "parent", Protections.id)
 Services = menu.add_feature("Services Option", "parent", Protections.id)
 Fireworks = menu.add_feature("Fireworks Option", "parent", Protections.id)
-friendly = menu.add_feature("Friendly Options", "parent", Protections.id)
 Troll2 = menu.add_feature("Trolls Option", "parent", Protections.id)
 nuke = menu.add_feature("Nuke locations Option", "parent", Protections.id)
 blocks = menu.add_feature("Block Areas Option", "parent", Protections.id)
@@ -25056,7 +25057,7 @@ Malicious = menu.add_feature("Malicious Option", "parent", Protections.id)
 --Sub Menu Tabs End
 
 
-menu.add_feature("30k CEO Loop", "toggle", friendly.id, function(f)
+menu.add_feature("30k CEO Loop", "toggle", Bank.id, function(f)
 	menu.create_thread(function()
 		while f.on do
 			for pid in Draculaplayers() do
@@ -25374,9 +25375,9 @@ menu.add_feature("Russian Roulette", "action_value_str", Malicious.id, function(
                rndint = math.random(1, 6)
                if rndint == 3 then
                    if f.value == 0 then
-                       while not graphics.has_named_ptfx_asset_loaded("scr_xm_orbital") do
-                        graphics.request_named_ptfx_asset("scr_xm_orbital")
-                        system.wait(0)
+                    while not graphics.has_named_ptfx_asset_loaded("scr_xm_orbital") do
+                    graphics.request_named_ptfx_asset("scr_xm_orbital")
+                    system.wait(0)
                     end
                     fire.add_explosion(player.get_player_coords(pid), 59, true, false, 5, player.get_player_ped(pid))
                     graphics.start_networked_ptfx_non_looped_at_coord("scr_xm_orbital_blast", player.get_player_coords(pid), player.get_player_coords(pid), 4.5, true, true, true)
@@ -26092,6 +26093,7 @@ menu.add_feature("Auto Waypoint Tp", "toggle", misc.id, function(f)
 				else
 					entity.set_entity_coords_no_offset(player.get_player_ped(player.player_id()), pos)
 				end
+
 				local time = utils.time_ms() + 1000
 				while time > utils.time_ms() do
 					system.yield(0)
@@ -26101,35 +26103,19 @@ menu.add_feature("Auto Waypoint Tp", "toggle", misc.id, function(f)
 							if player.is_player_in_any_vehicle(player.player_id()) then
 								utilities.request_control(player.get_player_vehicle(player.player_id()))
 								entity.set_entity_coords_no_offset(player.get_player_vehicle(player.player_id()), v3(player.get_player_coords(player.player_id()).x, player.get_player_coords(player.player_id()).y, player.get_player_coords(player.player_id()).z + 50))                         
-                                while not graphics.has_named_ptfx_asset_loaded("scr_michael2") do
-                                    graphics.request_named_ptfx_asset("scr_michael2")
-                                    system.wait(0)
-                                end
-                                graphics.start_networked_ptfx_non_looped_at_coord("scr_abattoir_ped_sliced", player.get_player_coords(player.player_id()), player.get_player_coords(player.player_id()), 4.5, true, true, true)
+                                
                             else
 								entity.set_entity_coords_no_offset(player.get_player_ped(player.player_id()), v3(player.get_player_coords(player.player_id()).x, player.get_player_coords(player.player_id()).y, player.get_player_coords(player.player_id()).z + 50))                     
-                                while not graphics.has_named_ptfx_asset_loaded("scr_michael2") do
-                                    graphics.request_named_ptfx_asset("scr_michael2")
-                                    system.wait(0)
-                                end
-                                graphics.start_networked_ptfx_non_looped_at_coord("scr_abattoir_ped_sliced", player.get_player_coords(player.player_id()), player.get_player_coords(player.player_id()), 4.5, true, true, true)
+                               
                             end
 						else
 							if player.is_player_in_any_vehicle(player.player_id()) then
 								utilities.request_control(player.get_player_vehicle(player.player_id()))
 								entity.set_entity_coords_no_offset(player.get_player_vehicle(player.player_id()), v3(player.get_player_coords(player.player_id()).x, player.get_player_coords(player.player_id()).y, float + 1))                    
-                                while not graphics.has_named_ptfx_asset_loaded("scr_michael2") do
-                                    graphics.request_named_ptfx_asset("scr_michael2")
-                                    system.wait(0)
-                                end
-                                graphics.start_networked_ptfx_non_looped_at_coord("scr_abattoir_ped_sliced", player.get_player_coords(player.player_id()), player.get_player_coords(player.player_id()), 4.5, true, true, true)
+                                
                             else
 								entity.set_entity_coords_no_offset(player.get_player_ped(player.player_id()), v3(player.get_player_coords(player.player_id()).x, player.get_player_coords(player.player_id()).y, float + 1))                        
-                                while not graphics.has_named_ptfx_asset_loaded("scr_michael2") do
-                                    graphics.request_named_ptfx_asset("scr_michael2")
-                                    system.wait(0)
-                                end
-                                graphics.start_networked_ptfx_non_looped_at_coord("scr_abattoir_ped_sliced", player.get_player_coords(player.player_id()), player.get_player_coords(player.player_id()), 4.5, true, true, true)
+                                
                             end
 							previous_position = nil
 						end
@@ -26140,18 +26126,10 @@ menu.add_feature("Auto Waypoint Tp", "toggle", misc.id, function(f)
 					if player.is_player_in_any_vehicle(player.player_id()) then
 						utilities.request_control(player.get_player_vehicle(player.player_id()))
 						entity.set_entity_coords_no_offset(player.get_player_vehicle(player.player_id()), previous_position)                 
-                        while not graphics.has_named_ptfx_asset_loaded("scr_michael2") do
-                            graphics.request_named_ptfx_asset("scr_michael2")
-                            system.wait(0)
-                        end
-                        graphics.start_networked_ptfx_non_looped_at_coord("scr_abattoir_ped_sliced", player.get_player_coords(player.player_id()), player.get_player_coords(player.player_id()), 4.5, true, true, true)
+                        
 					else
 						entity.set_entity_coords_no_offset(player.get_player_ped(player.player_id()), previous_position)                    
-                        while not graphics.has_named_ptfx_asset_loaded("scr_michael2") do
-                            graphics.request_named_ptfx_asset("scr_michael2")
-                            system.wait(0)
-                        end
-                        graphics.start_networked_ptfx_non_looped_at_coord("scr_abattoir_ped_sliced", player.get_player_coords(player.player_id()), player.get_player_coords(player.player_id()), 4.5, true, true, true)
+                       
 					end
 					previous_position = nil
 				end
@@ -41905,7 +41883,7 @@ end
 
 -------------------------------------------------------------------Online Player Troll Options-----------------------------------------------------------------------------------------------------
 online = menu.add_player_feature("Dracula", "parent", main_menu.id)
-Immunevirus = menu.add_player_feature("Immune virus Options", "parent", online.id)
+bloodlust = menu.add_player_feature("Blood Lust", "parent", online.id)
 trolls = menu.add_player_feature("Troll Options", "parent", online.id)
 peds1 = menu.add_player_feature("Pedestrian Options", "parent", online.id)
 sms1 = menu.add_player_feature("Chat Options", "parent", online.id)
@@ -41947,7 +41925,7 @@ end)
 
 
 --Fun
-menu.add_player_feature("Vampiric Drain", "toggle", trolls.id, function(playerfeat, pid)
+menu.add_player_feature("Vampiric Drain", "toggle", bloodlust.id, function(playerfeat, pid)
     menu.notify("Draining " .. player.get_player_name(pid), troll_menu_ver)
     ped.clear_ped_tasks_immediately(player.get_player_ped(pid))
 
@@ -41957,7 +41935,6 @@ menu.add_player_feature("Vampiric Drain", "toggle", trolls.id, function(playerfe
 
     for i=1, 10 do
         fire.add_explosion(player.get_player_coords(pid) + v3(0, 0, 1), 21, true, true, 0, pid)
-        fire.add_explosion(player.get_player_coords(pid) + v3(0, 0, 1), 20, true, true, 0, pid)
     end
     
     system.wait(7100)
@@ -42998,7 +42975,7 @@ end)
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- shit--
-menu.add_player_feature("influenza Virus", "action", Immunevirus.id, function(playerfeat_toggle_val, pid)
+menu.add_player_feature("influenza Virus", "action", bloodlust.id, function(playerfeat_toggle_val, pid)
     menu.notify("Giving influenza Virus\n\n" .. player.get_player_name(pid), troll_menu_ver, 11, 0x000dff)
      cagepos = player.get_player_coords(pid)
     cagepos.z = cagepos.z - 2.6
@@ -43075,7 +43052,7 @@ menu.add_player_feature("influenza Virus", "action", Immunevirus.id, function(pl
 end)
 
 
-menu.add_player_feature("Covid19 Virus", "action", Immunevirus.id, function(feat, pid)
+menu.add_player_feature("Covid19 Virus", "action", bloodlust.id, function(feat, pid)
     menu.notify("Spreading Covid-19 Virus To\n" .. player.get_player_name(pid), troll_menu_ver, 11, 0x000dff)
     
      cagepos = player.get_player_coords(pid)
