@@ -4,7 +4,7 @@ if Dracula_version then
 end 
 
 --Set Version Here requeriment for the script to work
-Dracula_version = "20.963"
+Dracula_version = "20.964"
 
 menu.create_thread(function()
 
@@ -11546,7 +11546,7 @@ normalgod_mode3 =
     HealthOp.id,
     function(feat)
         if feat.on then
-            while feat.on then
+            while feat.on do
                 audio.play_sound_from_coord(-1, "1st_Person_Transition", "PLAYER_SWITCH_CUSTOM_SOUNDSET") --Play sound
             end
             me = player.player_id()
