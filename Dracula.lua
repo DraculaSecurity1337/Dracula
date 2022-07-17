@@ -4,7 +4,7 @@ if Dracula_version then
 end 
 
 --Set Version Here requeriment for the script to work
-Dracula_version = "20.966"
+Dracula_version = "20.967"
 
 menu.create_thread(function()
 
@@ -26097,67 +26097,39 @@ menu.add_feature("Auto Waypoint Tp", "toggle", misc.id, function(f)
 					system.yield(0)
 					if previous_position then
 						local success, float = gameplay.get_ground_z(player.get_player_coords(player.player_id()))
-                        while not graphics.has_named_ptfx_asset_loaded("scr_abattoir_ped_sliced") do
-                            graphics.request_named_ptfx_asset("scr_abattoir_ped_sliced")
-                            system.wait(0)
-                        end
 						if not success then
 							if player.is_player_in_any_vehicle(player.player_id()) then
 								utilities.request_control(player.get_player_vehicle(player.player_id()))
-								entity.set_entity_coords_no_offset(player.get_player_vehicle(player.player_id()), v3(player.get_player_coords(player.player_id()).x, player.get_player_coords(player.player_id()).y, player.get_player_coords(player.player_id()).z + 50))
-                                if graphics.has_named_ptfx_asset_loaded("scr_abattoir_ped_sliced") then
-                                    graphics.start_networked_ptfx_non_looped_at_coord(
-                                        "scr_abattoir_ped_sliced",
-                                        player.get_player_coords(pid),
-                                        v3(0, 0, player_heading),
-                                        1,
-                                        false,
-                                        false,
-                                        true
-                                    )
+								entity.set_entity_coords_no_offset(player.get_player_vehicle(player.player_id()), v3(player.get_player_coords(player.player_id()).x, player.get_player_coords(player.player_id()).y, player.get_player_coords(player.player_id()).z + 50))                         
+                                while not graphics.has_named_ptfx_asset_loaded("scr_michael2") do
+                                    graphics.request_named_ptfx_asset("scr_michael2")
+                                    system.wait(0)
                                 end
+                                graphics.start_networked_ptfx_non_looped_at_coord("scr_abattoir_ped_sliced", player.get_player_coords(player.player_id()), player.get_player_coords(player.player_id()), 4.5, true, true, true)
                             else
-								entity.set_entity_coords_no_offset(player.get_player_ped(player.player_id()), v3(player.get_player_coords(player.player_id()).x, player.get_player_coords(player.player_id()).y, player.get_player_coords(player.player_id()).z + 50))
-                                if graphics.has_named_ptfx_asset_loaded("scr_abattoir_ped_sliced") then
-                                    graphics.start_networked_ptfx_non_looped_at_coord(
-                                        "scr_abattoir_ped_sliced",
-                                        player.get_player_coords(pid),
-                                        v3(0, 0, player_heading),
-                                        1,
-                                        false,
-                                        false,
-                                        true
-                                    )
+								entity.set_entity_coords_no_offset(player.get_player_ped(player.player_id()), v3(player.get_player_coords(player.player_id()).x, player.get_player_coords(player.player_id()).y, player.get_player_coords(player.player_id()).z + 50))                     
+                                while not graphics.has_named_ptfx_asset_loaded("scr_michael2") do
+                                    graphics.request_named_ptfx_asset("scr_michael2")
+                                    system.wait(0)
                                 end
+                                graphics.start_networked_ptfx_non_looped_at_coord("scr_abattoir_ped_sliced", player.get_player_coords(player.player_id()), player.get_player_coords(player.player_id()), 4.5, true, true, true)
                             end
 						else
 							if player.is_player_in_any_vehicle(player.player_id()) then
 								utilities.request_control(player.get_player_vehicle(player.player_id()))
-								entity.set_entity_coords_no_offset(player.get_player_vehicle(player.player_id()), v3(player.get_player_coords(player.player_id()).x, player.get_player_coords(player.player_id()).y, float + 1))
-                                if graphics.has_named_ptfx_asset_loaded("scr_abattoir_ped_sliced") then
-                                    graphics.start_networked_ptfx_non_looped_at_coord(
-                                        "scr_abattoir_ped_sliced",
-                                        player.get_player_coords(pid),
-                                        v3(0, 0, player_heading),
-                                        1,
-                                        false,
-                                        false,
-                                        true
-                                    )
+								entity.set_entity_coords_no_offset(player.get_player_vehicle(player.player_id()), v3(player.get_player_coords(player.player_id()).x, player.get_player_coords(player.player_id()).y, float + 1))                    
+                                while not graphics.has_named_ptfx_asset_loaded("scr_michael2") do
+                                    graphics.request_named_ptfx_asset("scr_michael2")
+                                    system.wait(0)
                                 end
+                                graphics.start_networked_ptfx_non_looped_at_coord("scr_abattoir_ped_sliced", player.get_player_coords(player.player_id()), player.get_player_coords(player.player_id()), 4.5, true, true, true)
                             else
-								entity.set_entity_coords_no_offset(player.get_player_ped(player.player_id()), v3(player.get_player_coords(player.player_id()).x, player.get_player_coords(player.player_id()).y, float + 1))
-                                if graphics.has_named_ptfx_asset_loaded("scr_abattoir_ped_sliced") then
-                                    graphics.start_networked_ptfx_non_looped_at_coord(
-                                        "scr_abattoir_ped_sliced",
-                                        player.get_player_coords(pid),
-                                        v3(0, 0, player_heading),
-                                        1,
-                                        false,
-                                        false,
-                                        true
-                                    )
+								entity.set_entity_coords_no_offset(player.get_player_ped(player.player_id()), v3(player.get_player_coords(player.player_id()).x, player.get_player_coords(player.player_id()).y, float + 1))                        
+                                while not graphics.has_named_ptfx_asset_loaded("scr_michael2") do
+                                    graphics.request_named_ptfx_asset("scr_michael2")
+                                    system.wait(0)
                                 end
+                                graphics.start_networked_ptfx_non_looped_at_coord("scr_abattoir_ped_sliced", player.get_player_coords(player.player_id()), player.get_player_coords(player.player_id()), 4.5, true, true, true)
                             end
 							previous_position = nil
 						end
@@ -26167,9 +26139,19 @@ menu.add_feature("Auto Waypoint Tp", "toggle", misc.id, function(f)
 				if previous_position then
 					if player.is_player_in_any_vehicle(player.player_id()) then
 						utilities.request_control(player.get_player_vehicle(player.player_id()))
-						entity.set_entity_coords_no_offset(player.get_player_vehicle(player.player_id()), previous_position)
+						entity.set_entity_coords_no_offset(player.get_player_vehicle(player.player_id()), previous_position)                 
+                        while not graphics.has_named_ptfx_asset_loaded("scr_michael2") do
+                            graphics.request_named_ptfx_asset("scr_michael2")
+                            system.wait(0)
+                        end
+                        graphics.start_networked_ptfx_non_looped_at_coord("scr_abattoir_ped_sliced", player.get_player_coords(player.player_id()), player.get_player_coords(player.player_id()), 4.5, true, true, true)
 					else
-						entity.set_entity_coords_no_offset(player.get_player_ped(player.player_id()), previous_position)
+						entity.set_entity_coords_no_offset(player.get_player_ped(player.player_id()), previous_position)                    
+                        while not graphics.has_named_ptfx_asset_loaded("scr_michael2") do
+                            graphics.request_named_ptfx_asset("scr_michael2")
+                            system.wait(0)
+                        end
+                        graphics.start_networked_ptfx_non_looped_at_coord("scr_abattoir_ped_sliced", player.get_player_coords(player.player_id()), player.get_player_coords(player.player_id()), 4.5, true, true, true)
 					end
 					previous_position = nil
 				end
