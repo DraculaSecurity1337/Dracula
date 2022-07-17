@@ -349,7 +349,7 @@ end
 function update_Dracula()
 	local github_branch_name <const> = "master"
 	local base_path <const> = "https://raw.githubusercontent.com/DraculaSecurity1337/Dracula/"..github_branch_name.."/"
-	local version_check_status <const>, script_version = web.get(base_path.."Dracula_VERSION.txt")
+	local version_check_status <const>, script_version = web.get(base_path.."DRACULA_VERSION.txt")
 	local script_version <const> = script_version:gsub("[^%w\32.]", "")
 	local
 		update_status,
@@ -434,8 +434,8 @@ function update_Dracula()
 		end
 	end
 	do
-		current_file = "Dracula_main.lua" -- Download updated files
-		local status <const>, str <const> = web.get(base_path.."Dracula_main.lua")
+		current_file = "Dracula.lua" -- Download updated files
+		local status <const>, str <const> = web.get(base_path.."Dracula.lua")
 		update_status = status == 200
 		if not update_status then
 			goto exit
@@ -466,7 +466,7 @@ function update_Dracula()
 				io.remove(paths.Dracula.."Lib\\"..file_name)
 			end
 
-			local file <close> = io.open(paths.home.."scripts\\Dracula_main.lua", "w+b")
+			local file <close> = io.open(paths.home.."scripts\\Dracula.lua", "w+b")
 			file:write(Dracula_main_file)
 			file:flush()
 
@@ -481,7 +481,7 @@ function update_Dracula()
 			show_changelog()
 			system.yield(0) -- show_changelog creates a thread
 			Dracula_version = nil
-			dofile(paths.home.."scripts\\Dracula_main.lua")
+			dofile(paths.home.."scripts\\Dracula.lua")
 			return "has updated"
 		else
 			update_status = "done"
