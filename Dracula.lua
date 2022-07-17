@@ -45446,6 +45446,6 @@ function settings:initialize(...)
 		feat.on = self.in_use["Drive style"] & feat.data == feat.data
 	end
 end
-settings:initialize(paths.home.."settings\\Dracula\\draculasettings.ini")
+settings:initialize(paths.home.."scripts\\Dracula\\draculasettings.ini")
 
 end, nil)
