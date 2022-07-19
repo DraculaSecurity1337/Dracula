@@ -4,7 +4,7 @@ if Dracula_version then
 end 
 
 --Set Version Here requeriment for the script to work
-Dracula_version = "20.969"
+Dracula_version = "20.970"
 
 menu.create_thread(function()
 
@@ -39,6 +39,64 @@ settings.drive_style_toggles = {}
 settings.valuei = {}
 settings.valuef = {}
 settings.hotkey_features = {}
+
+function settings:save(...)
+	local file_path <const> = ...
+	local file = io.open(file_path, "w+")
+	for name, feat in pairs(self.toggle) do
+		self.in_use[name] = feat.on
+	end
+	for name, feat in pairs(self.valuei) do
+		self.in_use[name] = feat.value
+	end
+	for name, feat in pairs(self.valuef) do
+		self.in_use[name] = feat.value
+	end
+	for setting_name, _ in pairs(self.default) do
+		file:write(string.format("%s=%s\n", setting_name, tostring(self.in_use[setting_name])))
+	end
+	file:flush()
+	file:close()
+end
+
+function settings:initialize(...)
+	local file_path <const> = ...
+	assert(utils.file_exists(file_path), debug.traceback("Tried to initialize settings from a file that doesn't exist.", 2))
+	local file = io.open(file_path)
+	assert(file, debug.traceback("Failed to open settings file.", 2))
+	local str <const> = file:read("*a")
+	file:close()
+	local type <const>, tonumber <const> = type, tonumber
+	for name, setting in str:gmatch("([^\n\r]+)=([^\n\r]+)") do
+		local num <const> = tonumber(setting)
+		local setting_type <const> = type(self.default[name])
+		if setting_type == "number" then
+			setting = num
+		elseif setting == nil then
+			setting = self.default[name]
+		elseif setting_type == "boolean" then
+			setting = setting == "true"
+		end
+		self.in_use[name] = setting
+	end
+	local file = io.open(file_path, "a+")
+	file:setvbuf("full")
+	assert(io.type(file) == "file", debug.traceback("Failed to open settings file.", 2))
+	for setting_name, default in pairs(self.default) do
+		if self.in_use[setting_name] == nil then
+			self.in_use[setting_name] = default
+			file:write(string.format("%s=%s\n", setting_name, tostring(self.in_use[setting_name])))
+		end
+	end
+	file:close()
+	for name, feat in pairs(self.toggle) do
+		feat.on = self.in_use[name]
+	end
+	for name, feat in pairs(self.valuef) do
+		feat.value = self.in_use[name]
+	end
+end
+
 
 
 function get_file_string(file_path, mode)
@@ -168,7 +226,194 @@ for _, properties in pairs({
 	{
 		setting_name = "Where to send your translated messages",
 		setting = 0
-	}
+	},
+    {
+        setting_name = "Vampiric Stealth Immortality",
+        setting = false
+    },
+    {
+        setting_name = "Vampiric Immortality",
+        setting = true
+    },
+    {
+        setting_name = "Bank to Wallet",
+        setting = false
+    },
+    {
+        setting_name = "Wallet to Bank",
+        setting = true
+    },
+    {
+        setting_name = "30k CEO",
+        setting = false
+    },
+    {
+        setting_name = "Rapid Fire",
+        setting = true
+    },
+    {
+        setting_name = "Lester Gun",
+        setting = false
+    },
+    {
+        setting_name = "Clown Gun",
+        setting = false
+    },
+    {
+        setting_name = "Bigfoot Gun",
+        setting = false
+    },
+    {
+        setting_name = "Black guy Gun",
+        setting = false
+    },
+    {
+        setting_name = "Chop Gun",
+        setting = false
+    },
+    {
+        setting_name = "Rainbow Weapon",
+        setting = false
+    },
+    {
+        setting_name = "Airstrike Gun",
+        setting = false
+    },
+    {
+        setting_name = "Firework Gun",
+        setting = false
+    },
+    {
+        setting_name = "Apocalypse Gun",
+        setting = false
+    },
+    {
+        setting_name = "Inf Parachute",
+        setting = false
+    },
+    {
+        setting_name = "Anti Crash Cam",
+        setting = false
+    },
+    {
+        setting_name = "Anti Barcode",
+        setting = false
+    },
+    {
+        setting_name = "Anti Barcode Shit Head",
+        setting = false
+    },
+    {
+        setting_name = "Anti Explosive Sniper 2",
+        setting = false
+    },
+    {
+        setting_name = "Anti Oppressor Mk2",
+        setting = false
+    },
+    {
+        setting_name = "Anti Oppressor Mk1",
+        setting = false
+    },
+    {
+        setting_name = "Anti Tank",
+        setting = false
+    },
+    {
+        setting_name = "Anti Khanjali Tank",
+        setting = false
+    },
+    {
+        setting_name = "Anti Terrorbyte",
+        setting = false
+    },
+    {
+        setting_name = "Anti Minitank",
+        setting = false
+    },
+    {
+        setting_name = "Anti APC",
+        setting = false
+    },
+    {
+        setting_name = "Anti Hydra",
+        setting = false
+    },
+    {
+        setting_name = "Anti Lazer",
+        setting = false
+    },
+    {
+        setting_name = "Anti Savage",
+        setting = false
+    },
+    {
+        setting_name = "Anti Buzzard",
+        setting = false
+    },
+    {
+        setting_name = "MK2 Infinite",
+        setting = true
+    },
+    {
+        setting_name = "MK2 Boost",
+        setting = false
+    },
+    {
+        setting_name = "Enable Overlay",
+        setting = true
+    },{
+        setting_name = "Auto Waypoint",
+        setting = true
+    },{
+        setting_name = "Rapid Respawn",
+        setting = false
+    },{
+        setting_name = "Kill Tracker",
+        setting = true
+    },{
+        setting_name = "Session Logger",
+        setting = true
+    },{
+        setting_name = "Lua Name Animation",
+        setting = true
+    },{
+        setting_name = "Disable SharkCards",
+        setting = true
+    },{
+        setting_name = "Disable Rec",
+        setting = true
+    },{
+        setting_name = "Session Chat Flooder",
+        setting = false
+    },{
+        setting_name = "Disable CS",
+        setting = false
+    },{
+        setting_name = "Disable MinMap",
+        setting = false
+    },{
+        setting_name = "Disable VehInfo",
+        setting = false
+    },{
+        setting_name = "Disable OSI",
+        setting = false
+    },{
+        setting_name = "Disable LI",
+        setting = false
+    },{
+        setting_name = "Disable Misc Info",
+        setting = false
+    },{
+        setting_name = "Disable Menu Notif",
+        setting = false
+    },{
+        setting_name = "Display OS Time",
+        setting = false
+    },{
+        setting_name = "Game Notif Cleanup",
+        setting = false
+    }
 }) do
 	settings:add_setting(properties)
 end
@@ -11469,6 +11714,184 @@ MU(IND .."", "toggle", Independance_day.id, function(IND)
             end)
 
 --Bypass XMAS & Halloween Clothing End
+
+-- Settings
+
+local essentials = {}
+
+function essentials.ipv4_to_dec(...)
+	local ip <const> = ...
+	local dec = 0
+	for octet in ip:gmatch("%d+") do 
+		dec = octet + dec << 8 
+	end
+	return math.ceil(dec)
+end
+
+essentials.notif_colors = eventtrack.const({
+	red = 0xff0000ff,
+	yellow = 0xff00ffff,
+	blue = 0xffff0000,
+	green = 0xff00ff00,
+	purple = 0xff800080,
+	orange = 0xff0080ff,
+	brown = 0xff336699,
+	pink = 0xffff00ff
+})
+
+function essentials.msg(...)
+	local text <const>,
+	color <const>,
+	notifyOn <const>,
+	duration <const>,
+	header = ...
+	settings.assert(essentials.notif_colors[color], "Invalid color to notification.", color)
+	settings.assert(type(text) == "string", "Failed to send a notification.", text)
+	if notifyOn then
+		header = header or ""
+		if header == "" and Dracula_version then
+			header = "Dracula Menu".." "..Dracula_version
+		end
+		menu.notify(text, header, duration or 3, essentials.notif_colors[color])
+	end
+end
+
+function get_safe_feat_name(name) -- Checks if valid utf8 code, removes corrupted bytes if not
+	local str = name
+	if not utf8.len(name) then
+		str = name:gsub("[^A-Za-z0-9%s%p%c]", "")
+	end
+	return str
+end
+
+function is_str(f, str)
+	return f.str_data[f.value + 1] == str
+end
+
+function create_empty_file(file_path)
+	settings.assert(not utils.file_exists(file_path), "Tried to overwrite existing file:", file_path)
+	local file <close> = io.open(file_path, "w+")
+end
+
+function rename_file(...)
+	local file_path <const>, 
+	original_file_name <const>, 
+	new_file_name <const>, 
+	file_extension = ...
+	file_extension = "."..file_extension
+	local original_file_path <const> = file_path..original_file_name..file_extension
+	local new_file_path <const> = file_path..new_file_name..file_extension
+	settings.assert(not new_file_name:find("[<>:\"/\\|%?%*]"), "Tried to rename file to a name containing illegal characters:", new_file_name)
+	settings.assert(utils.file_exists(original_file_path), "Tried to rename a file that doesn't exist.", original_file_path)
+	settings.assert(not utils.file_exists(new_file_path), "Tried to overwrite an existing file while attempting to rename a file.", original_file_path, new_file_path)
+	local file_string <const> = get_file_string(original_file_path, "rb"):gsub("\r", "")
+	io.remove(original_file_path)
+	local file <close> = io.open(new_file_path, "w+")
+	file:write(file_string)
+	file:flush()
+end
+
+profiles = menu.add_feature("Profiles", "parent", misc.id)
+
+do
+	local function create_profile_feature(...)
+		local file_name <const> = ...
+		if file_name ~= get_safe_feat_name(file_name) then
+			return
+		end
+		menu.add_feature(get_safe_feat_name(file_name):gsub("%.ini$", ""), "action_value_str", profiles.id, function(f)
+			if is_str(f, "Load") then
+				if utils.file_exists(paths.home.."scripts\\Dracula\\"..f.name..".ini") then
+					settings:initialize(paths.home.."scripts\\Dracula\\"..f.name..".ini")
+					essentials.msg(string.format("%s %s.", "Successfully loaded", f.name), "green", true)
+				else
+					essentials.msg("Couldn't find file", "red", true)
+				end
+			elseif is_str(f, "Save") then
+				settings:save(paths.home.."scripts\\Dracula\\"..f.name..".ini")
+				essentials.msg(string.format("%s %s.", "Saved", f.name), "green", true)
+			elseif is_str(f, "Delete") then
+				if utils.file_exists(paths.home.."scripts\\Dracula\\"..f.name..".ini") then
+					io.remove(paths.home.."scripts\\Dracula\\"..f.name..".ini")
+				end
+				f.hidden = true
+			elseif is_str(f, "Change Name") then
+				local input, status = f.name
+				while true do
+					input, status = get_input("Type in the name of the profile.", input, 128, 0)
+					if status == 2 then
+						return
+					end
+					if input:find("..", 1, true) or input:find("%.$") then
+						essentials.msg("You cannot have \"..\" in the settings name. There also can't be a \".\" at the end of the name.", "red", true)
+						goto skip
+					end
+					if utils.file_exists(paths.home.."scripts\\Dracula\\"..input..".ini") then
+						essentials.msg("Existing file found. Please choose another name.", "red", true)
+						goto skip
+					end
+					if not input:find("[<>:\"/\\|%?%*]") then
+						break
+					else
+						essentials.msg("Illegal characters detected. Please try again. Illegal chars:".." \"<\", \">\", \":\", \"/\", \"\\\", \"|\", \"?\", \"*\"", "red", true, 7)
+					end
+					::skip::
+					system.yield(0)
+				end
+				rename_file(paths.home.."scripts\\Dracula\\", f.name, input, "ini")
+				f.name = input
+				essentials.msg("Saved profile name.", "green", true)
+			end
+		end):set_str_data({
+			"Load",
+			"Save",
+			"Delete",
+			"Change Name"
+		})
+	end
+
+	 menu.add_feature("Settings", "action_value_str", profiles.id, function(f)
+	 	if is_str(f, "save to default") then
+			settings:save(paths.home.."scripts\\Dracula\\draculasettings.ini")
+			essentials.msg("Settings saved!", "green", true)
+		elseif is_str(f, "New profile") then
+			local input, status
+			while true do
+				input, status = get_input("Type in the name of the profile.", input, 128, 0)
+				if status == 2 then
+					return
+				end
+				if input:find("..", 1, true) or input:find("%.$") then
+					essentials.msg("There can't be a \"..\" in the name. There also can't be a \".\" at the end of the name.", "red", true)
+					goto skip
+				end
+				if utils.file_exists(paths.home.."scripts\\Dracula\\"..input..".ini") then
+					essentials.msg("Existing file found. Please choose another name.", "red", true)
+					goto skip
+				end
+				if not input:find("[<>:\"/\\|%?%*]") then
+					break
+				else
+					essentials.msg("Illegal characters detected. Please try again. Illegal chars:".." \"<\", \">\", \":\", \"/\", \"\\\", \"|\", \"?\", \"*\"", "red", true, 7)
+				end
+				::skip::
+				system.yield(0)
+			end
+			create_empty_file(paths.home.."scripts\\Dracula\\"..input..".ini")
+			settings:save(paths.home.."scripts\\Dracula\\"..input..".ini")
+			create_profile_feature(input..".ini")
+			essentials.msg("Settings saved!", "green", true)
+		end
+	end):set_str_data({
+		"save to default",
+		"New profile"	
+    })
+
+	for _, file_name in pairs(utils.get_all_files_in_directory(paths.home.."scripts\\Dracula\\", "ini")) do
+		create_profile_feature(file_name)
+	end
+end
+
 --------------------------------------------------------------------------------------------------Beep of death--------------------------------------------------------------------------------------
 menu.add_feature(
    "Beep of Death Info",
@@ -11539,7 +11962,7 @@ menu.add_feature("Set Blood Strength", "action", HealthOp.id, function(f)
 end)
 
 --Health
-normalgod_mode3 =
+settings.toggle["Vampiric Stealth Immortality"] =
     menu.add_feature(
     "Vampiric Stealth Immortality",
     "toggle",
@@ -11563,10 +11986,8 @@ normalgod_mode3 =
             ped.set_ped_health(player.get_player_ped(me), 328)
             end
         end)
-normalgod_mode3.on = false
 
-
-Godmode =
+settings.toggle["Vampiric Immortality"] =
     menu.add_feature(
     "Vampiric Immortality",
     "toggle",
@@ -11587,7 +12008,7 @@ Godmode =
     end
 
 )
-Godmode.on = true
+
 --Health Options End
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --Funny Options
@@ -11646,7 +12067,7 @@ function NET_GAMESERVER_TRANSFER_WALLET_TO_BANK(charSlot, amount)
     return native.call(0xC2F7FE5309181C7D, charSlot, amount)
 end   
 
-bankToWallet =
+settings.toggle["Bank to Wallet"] =
 menu.add_feature("Transfer All Blood Money To Wallet", "toggle", Bank.id, function(f)
     if f.on then
     	while f.on do
@@ -11663,9 +12084,8 @@ menu.add_feature("Transfer All Blood Money To Wallet", "toggle", Bank.id, functi
 		end
     end 
 end)
-bankToWallet.on = false
 
-walletToBank =
+settings.toggle["Wallet to Bank"] =
 menu.add_feature("Transfer Blood Money from Wallet To Bank", "toggle", Bank.id, function(f)
     if f.on then
     	while f.on do
@@ -11682,7 +12102,6 @@ menu.add_feature("Transfer Blood Money from Wallet To Bank", "toggle", Bank.id, 
 		end
     end 
 end)
-walletToBank.on = true
 
 --Bank Options End
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -11701,7 +12120,7 @@ cleartask = ped.clear_ped_tasks_immediately
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --Vehicle Option Start
-Boost =
+settings.toggle["MK2 Infinite"] = 
 menu.add_feature("Mk2 Infinite Boost", "toggle", vehicle.id, function(f)
 	if f.on then
     	while f.on do
@@ -11713,9 +12132,8 @@ menu.add_feature("Mk2 Infinite Boost", "toggle", vehicle.id, function(f)
 		end
     end
 end)
-Boost.on = true
 
-
+settings.toggle["MK2 Boost"] = 
 menu.add_feature("Mk2 Boost", "toggle", vehicle.id, function(f)
 	if f.on then
 		while f.on do
@@ -11773,7 +12191,7 @@ end
 --Vehicle Option End
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --Rapidfire
-rapidfire =
+settings.toggle["Rapid Fire"] =
 menu.add_feature("Rapid Fire", "toggle", Tactical.id, function(f)
     if f.on then
 		while f.on do
@@ -11803,11 +12221,6 @@ menu.add_feature("Rapid Fire", "toggle", Tactical.id, function(f)
 		end
 	end
 end)
-rapidfire.on = true
-
-
-
-
 
 
 menu.add_feature(
@@ -11959,6 +12372,7 @@ Targman.hidden = true
 
  pedgun = menu.add_feature("Ped gun", "parent", Tactical.id)
 
+settings.toggle["Lester Gun"] =
 menu.add_feature(
     "Lester",
     "toggle",
@@ -11982,7 +12396,7 @@ menu.add_feature(
     end
 )
 
-
+settings.toggle["Clown Gun"] =
 menu.add_feature(
     "Clown",
     "toggle",
@@ -12006,6 +12420,7 @@ menu.add_feature(
     end
 )
 
+settings.toggle["Bigfoot Gun"] =
 menu.add_feature(
     "Bigfoot",
     "toggle",
@@ -12029,6 +12444,7 @@ menu.add_feature(
     end
 )
 
+settings.toggle["Black guy Gun"] =
 menu.add_feature(
     "Black guy",
     "toggle",
@@ -12052,6 +12468,7 @@ menu.add_feature(
     end
 )
 
+settings.toggle["Chop Gun"] =
 menu.add_feature(
     "Chop",
     "toggle",
@@ -12075,7 +12492,7 @@ menu.add_feature(
     end
 )
 
- RainbowWeapon =
+settings.toggle["Rainbow Weapon"] =
     menu.add_feature(
     "Colored Weapons (ms)",
     "value_i",
@@ -12095,11 +12512,12 @@ menu.add_feature(
         return HANDLER_CONTINUE
     end
 )
-RainbowWeapon.min = 0
-RainbowWeapon.max = 1000
-RainbowWeapon.value = 100
-RainbowWeapon.mod = 100
+settings.toggle["Rainbow Weapon"].min = 0
+settings.toggle["Rainbow Weapon"].max = 1000
+settings.toggle["Rainbow Weapon"].value = 100
+settings.toggle["Rainbow Weapon"].mod = 100
 
+settings.toggle["Airstrike Gun"] =
 menu.add_feature("Airstrike Gun", "toggle", Tactical.id, function(pid)
      we, Ped, P = gameplay.get_hash_key("weapon_airstrike_rocket"), player.get_player_ped(player.player_id()), v3(0, 0, 10)
     while pid.on do
@@ -12114,6 +12532,7 @@ menu.add_feature("Airstrike Gun", "toggle", Tactical.id, function(pid)
     end
   end)
 
+settings.toggle["Firework Gun"] =
 menu.add_feature(
     "Firework Gun",
     "value_str",
@@ -12150,9 +12569,10 @@ menu.add_feature(
         end
         return HANDLER_POP
     end
-):set_str_data {"Flying", "Still"}
+)
+settings.toggle["Firework Gun"]:set_str_data {"Flying", "Still"}
 
- apocalypse_gun =
+settings.toggle["Apocalypse Gun"] =
     menu.add_feature(
     "Apocalypse Gun",
     "toggle",
@@ -12225,7 +12645,7 @@ menu.add_feature(
 )
 
 
-Parachute_Men = 
+settings.toggle["Inf Parachute"] = 
 menu.add_feature(
 "Infinite Parachutes", 
 "toggle",
@@ -12262,9 +12682,9 @@ excludeFriends =
    notify.id,
    function(toggle)
        if toggle.on then
-           excludeFriends.on = true
+        excludeFriends.on = true
        else
-           excludeFriends.on = false
+        excludeFriends.on = false
        end
    end
 )
@@ -12326,8 +12746,15 @@ function explodeFunc(pid, modder)
     end
 end
 
+for i = 1, 109 do
+    settings:add_setting({
+        setting_name = "block"..i, 
+        setting = false
+    })
+end
+
 --two
-block1 =
+settings.toggle["block1"] =
    menu.add_feature(
    "Casino Front Foor",
    "toggle",
@@ -12437,7 +12864,7 @@ block1 =
    end)
 
 
-block2 =
+settings.toggle["block2"] =
    menu.add_feature(
    "Casino Garage",
    "toggle",
@@ -12548,7 +12975,7 @@ block2 =
    end
 )
 
-block3 =
+settings.toggle["block3"] =
    menu.add_feature(
    "Casino Music Locker",
    "toggle",
@@ -12658,7 +13085,7 @@ block3 =
    end
 )
 
-block60 =
+settings.toggle["block60"] =
    menu.add_feature(
    "Rockford Agency",
    "toggle",
@@ -12768,7 +13195,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
        end
    end)
 
-block61 =
+settings.toggle["block61"] =
    menu.add_feature(
    "Vespucci Canals Agency",
    "toggle",
@@ -12879,7 +13306,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
    end
 )
 
-block62 =
+settings.toggle["block62"] =
    menu.add_feature(
    "Little Seoul Agency",
    "toggle",
@@ -12974,7 +13401,7 @@ block62 =
    end
 )
 
-block63 =
+settings.toggle["block63"] =
    menu.add_feature(
    "Hawick Agency",
    "toggle",
@@ -13085,7 +13512,7 @@ block63 =
    end
 )
 
-block4 =
+settings.toggle["block4"] =
    menu.add_feature(
    "Arena",
    "toggle",
@@ -13196,7 +13623,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
    end
 )
 
-block5 =
+settings.toggle["block5"] =
    menu.add_feature(
    "HAWICK Gun Shop",
    "toggle",
@@ -13419,7 +13846,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
    end
 )
 
-block7 =
+settings.toggle["block7"] =
    menu.add_feature(
    "Little Seoul Gun Shop",
    "toggle",
@@ -13530,7 +13957,7 @@ block7 =
    end
 )
 
-block8 =
+settings.toggle["block8"] =
    menu.add_feature(
    "Morningwood Gun Shop",
    "toggle",
@@ -13644,7 +14071,7 @@ block8 =
 )
 
 --next
-block9 =
+settings.toggle["block9"] =
    menu.add_feature(
    "Cypress Flats Gun Shop",
    "toggle",
@@ -13756,7 +14183,7 @@ local wanted;
  )
 
 
-block10 =
+settings.toggle["block10"] =
    menu.add_feature(
    "Chumash Gun Shop",
    "toggle",
@@ -13868,7 +14295,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
    end
 )
 
-block11 =
+settings.toggle["block11"] =
    menu.add_feature(
    "Great Chaparral Gun Shop",
    "toggle",
@@ -13980,7 +14407,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
    end
 )
 
-block12 =
+settings.toggle["block12"] =
    menu.add_feature(
    "Sandy Shores Gun Shop",
    "toggle",
@@ -14092,7 +14519,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
    end
 )
 
-block13 =
+settings.toggle["block13"] =
    menu.add_feature(
    "Paleto Bay Gun Shop",
    "toggle",
@@ -14202,7 +14629,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
    end
 )
 
-block14 =
+settings.toggle["block14"] =
    menu.add_feature(
    "Paleto Bay Gun Shop",
    "toggle",
@@ -14312,7 +14739,7 @@ block14 =
    end
 )
 
-block15 =
+settings.toggle["block15"] =
    menu.add_feature(
    "Pillbox Hill Office",
    "toggle",
@@ -14423,7 +14850,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
    end
 )
 
-block16 =
+settings.toggle["block16"] =
    menu.add_feature(
    "LS CAR MEET",
    "toggle",
@@ -14535,7 +14962,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
    end
 )
 
-block17 =
+settings.toggle["block17"] =
    menu.add_feature(
    "Del Perro Office",
    "toggle",
@@ -14646,7 +15073,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
    end
 )
 
-block18 =
+settings.toggle["block18"] =
    menu.add_feature(
    "Del Perro Office Garage",
    "toggle",
@@ -14758,7 +15185,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
    end
 )
 
-block19 =
+settings.toggle["block19"] =
    menu.add_feature(
    "Reservoir Facility",
    "toggle",
@@ -14869,7 +15296,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
    end
 )
 
-block59 =
+settings.toggle["block59"] =
    menu.add_feature(
    "Wind Farm Facility",
    "toggle",
@@ -14980,7 +15407,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
    end
 )
 
-block20 =
+settings.toggle["block20"] =
    menu.add_feature(
    "Senora Desert Facility",
    "toggle",
@@ -15092,7 +15519,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
    end
 )
 
-block21 =
+settings.toggle["block21"] =
    menu.add_feature(
    "Senora Desert Facility 2",
    "toggle",
@@ -15203,7 +15630,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
    end
 )
 
-block22 =
+settings.toggle["block22"] =
    menu.add_feature(
    "Zanudo River Facility",
    "toggle",
@@ -15314,7 +15741,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
    end
 )
 
-block23 =
+settings.toggle["block23"] =
    menu.add_feature(
    "Sandy Shores Facility",
    "toggle",
@@ -15425,7 +15852,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
    end
 )
 
-block24 =
+settings.toggle["block24"] =
    menu.add_feature(
    "Lago Zancudo Facility",
    "toggle",
@@ -15536,7 +15963,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
    end
 )
 
-block25 =
+settings.toggle["block25"] =
    menu.add_feature(
    "Paleto Bay Facility",
    "toggle",
@@ -15647,7 +16074,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
    end
 )
 
-block26 =
+settings.toggle["block26"] =
    menu.add_feature(
    "Mount Gordo Facility",
    "toggle",
@@ -15758,7 +16185,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
    end
 )
 
-block27 =
+settings.toggle["block27"] =
    menu.add_feature(
    "Paleto Forest Bunker",
    "toggle",
@@ -15869,7 +16296,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
    end
 )
 
-block28 =
+settings.toggle["block28"] =
    menu.add_feature(
    "Raton Canyon Bunker",
    "toggle",
@@ -15980,7 +16407,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
    end
 )
 
-block29 =
+settings.toggle["block29"] =
    menu.add_feature(
    "Grapeseed Bunker",
    "toggle",
@@ -16091,7 +16518,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
    end
 )
 
-block30 =
+settings.toggle["block30"] =
    menu.add_feature(
    "Lago Zancudo Bunker",
    "toggle",
@@ -16202,7 +16629,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
    end
 )
 
-block31 =
+settings.toggle["block31"] =
    menu.add_feature(
    "Senora Desert Bunker",
    "toggle",
@@ -16313,7 +16740,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
    end
 )
 
-block32 =
+settings.toggle["block32"] =
    menu.add_feature(
    "Senora Desert Bunker 2",
    "toggle",
@@ -16476,7 +16903,7 @@ local wanted;
    end
 )
 
-block33 =
+settings.toggle["block33"] =
    menu.add_feature(
    "Senora Desert Bunker 3",
    "toggle",
@@ -16588,7 +17015,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
    end
 )
 
-block34 =
+settings.toggle["block34"] =
    menu.add_feature(
    "Senora Desert Bunker 4",
    "toggle",
@@ -16699,7 +17126,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
    end
 )
 
-block35 =
+settings.toggle["block35"] =
    menu.add_feature(
    "Senora Desert Bunker 5",
    "toggle",
@@ -16810,7 +17237,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
    end
 )
 
-block36 =
+settings.toggle["block36"] =
    menu.add_feature(
    "Senora Desert Bunker 6",
    "toggle",
@@ -16921,7 +17348,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
    end
 )
 
-block37 =
+settings.toggle["block37"] =
    menu.add_feature(
    "400k Apartment",
    "toggle",
@@ -17032,7 +17459,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
    end
 )
 
-block38 =
+settings.toggle["block38"] =
    menu.add_feature(
    "West Vinwood Nightclub",
    "toggle",
@@ -17143,7 +17570,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
    end
 )
 
-block39 =
+settings.toggle["block39"] =
    menu.add_feature(
    "Downtown Vinewood Nightclub",
    "toggle",
@@ -17253,7 +17680,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
    end
 )
 
-block40 =
+settings.toggle["block40"] =
    menu.add_feature(
    "Del Perror NightClub",
    "toggle",
@@ -17364,7 +17791,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
    end
 )
 
-block41 =
+settings.toggle["block41"] =
    menu.add_feature(
    "Canals NightClub",
    "toggle",
@@ -17474,7 +17901,7 @@ block41 =
    end
 )
 
-block42 =
+settings.toggle["block42"] =
    menu.add_feature(
    "Mission Row NightClub",
    "toggle",
@@ -17585,7 +18012,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
    end
 )
 
-block43 =
+settings.toggle["block43"] =
    menu.add_feature(
    "Strawberry NightClub",
    "toggle",
@@ -17696,7 +18123,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
    end
 )
 
-block44 =
+settings.toggle["block44"] =
    menu.add_feature(
    "La Mesa NightClub",
    "toggle",
@@ -17807,7 +18234,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
    end
 )
 
-block45 =
+settings.toggle["block45"] =
    menu.add_feature(
    "Cypress Flats NightClub",
    "toggle",
@@ -17919,7 +18346,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
    end
 )
 
-block46 =
+settings.toggle["block46"] =
    menu.add_feature(
    "LSIA NightClub",
    "toggle",
@@ -18030,7 +18457,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
    end
 )
 
-block47 =
+settings.toggle["block47"] =
    menu.add_feature(
    "Elysian Island NightClub",
    "toggle",
@@ -18141,7 +18568,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
    end
 )
 
-block48 =
+settings.toggle["block48"] =
    menu.add_feature(
    "LSCM Rancho",
    "toggle",
@@ -18251,7 +18678,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
    end
 )
 
-block49 =
+settings.toggle["block49"] =
    menu.add_feature(
    "LSCM Strayberry",
    "toggle",
@@ -18362,7 +18789,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
    end
 )
 
-block50 =
+settings.toggle["block50"] =
    menu.add_feature(
    "LSCM Misson Row",
    "toggle",
@@ -18473,7 +18900,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
    end
 )
 
-block51 =
+settings.toggle["block51"] =
    menu.add_feature(
    "LSCM La Mesa",
    "toggle",
@@ -18584,7 +19011,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
    end
 )
 
-block52 =
+settings.toggle["block52"] =
    menu.add_feature(
    "LSCM Burton",
    "toggle",
@@ -18695,7 +19122,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
    end
 )
 
-block53 =
+settings.toggle["block53"] =
    menu.add_feature(
    "Arcade Davis",
    "toggle",
@@ -18806,7 +19233,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
    end
 )
 
-block54 =
+settings.toggle["block54"] =
    menu.add_feature(
    "Arcade La Mesa",
    "toggle",
@@ -18917,7 +19344,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
    end
 )
 
-block55 =
+settings.toggle["block55"] =
    menu.add_feature(
    "Arcade Vinewood",
    "toggle",
@@ -19029,7 +19456,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
    end
 )
 
-block56 =
+settings.toggle["block56"] =
    menu.add_feature(
    "Arcade Rockford Hills",
    "toggle",
@@ -19141,7 +19568,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
    end
 )
 
-block57 =
+settings.toggle["block57"] =
    menu.add_feature(
    "Arcade Grapeseed",
    "toggle",
@@ -19252,7 +19679,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
    end
 )
 
-block58 =
+settings.toggle["block58"] =
    menu.add_feature(
    "Arcade Paleto Bay",
    "toggle",
@@ -19363,7 +19790,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
    end)
 
 
-block64 =
+settings.toggle["block64"] =
    menu.add_feature(
    "DownTown Vinewood Weed Business",
    "toggle",
@@ -19475,7 +19902,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
 )
 
 
-block65 =
+settings.toggle["block65"] =
    menu.add_feature(
    "Elysian Island Coke Business",
    "toggle",
@@ -19587,7 +20014,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
 )
 
 
-block66 =
+settings.toggle["block66"] =
    menu.add_feature(
    "El Burro Heights Meth Business",
    "toggle",
@@ -19699,7 +20126,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
 )
 
 
-block67 =
+settings.toggle["block67"] =
    menu.add_feature(
    "El Burro Heights Meth Business",
    "toggle",
@@ -19811,7 +20238,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
 )
 
 
-block68 =
+settings.toggle["block68"] =
    menu.add_feature(
    "Vespucci Cash Factory Business",
    "toggle",
@@ -19924,7 +20351,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
 
 
 
-block69 =
+settings.toggle["block69"] =
    menu.add_feature(
    "Senora Club Business",
    "toggle",
@@ -20037,7 +20464,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
 
 
 
-block70 =
+settings.toggle["block70"] =
    menu.add_feature(
    "Sandy Shores Tattoo Parlor",
    "toggle",
@@ -20150,7 +20577,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
 
 
 
-block71 =
+settings.toggle["block71"] =
    menu.add_feature(
    "Sandy Shores Barber Shop",
    "toggle",
@@ -20263,7 +20690,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
 
 
 
-block72 =
+settings.toggle["block72"] =
    menu.add_feature(
    "Sandy Shores Store",
    "toggle",
@@ -20376,7 +20803,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
 
 
 
-block73 =
+settings.toggle["block73"] =
    menu.add_feature(
    "Sandy Shores Store 2",
    "toggle",
@@ -20488,7 +20915,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
 )
 
 
-block74 =
+settings.toggle["block74"] =
    menu.add_feature(
    "Harmony Store",
    "toggle",
@@ -20601,7 +21028,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
 
 
 
-block75 =
+settings.toggle["block75"] =
    menu.add_feature(
    "Harmony Clothes Store",
    "toggle",
@@ -20714,7 +21141,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
 
 
 
-block76 =
+settings.toggle["block76"] =
    menu.add_feature(
    "Senora Desert Store",
    "toggle",
@@ -20827,7 +21254,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
 
 
 
-block77 =
+settings.toggle["block77"] =
    menu.add_feature(
    "Senora Desert Discount Store",
    "toggle",
@@ -20940,7 +21367,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
 
 
 
-block78 =
+settings.toggle["block78"] =
    menu.add_feature(
    "Senora Desert LS Customs",
    "toggle",
@@ -21054,7 +21481,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
 
 
 
-block79 =
+settings.toggle["block79"] =
    menu.add_feature(
    "Senora Desert Store 1",
    "toggle",
@@ -21167,7 +21594,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
 
 
 
-block80 =
+settings.toggle["block80"] =
    menu.add_feature(
    "Grapeseed Cloth Store",
    "toggle",
@@ -21279,7 +21706,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
 )
 
 
-block81 =
+settings.toggle["block81"] =
    menu.add_feature(
    "Grapeseed Store",
    "toggle",
@@ -21392,7 +21819,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
 
 
 
-block82 =
+settings.toggle["block82"] =
    menu.add_feature(
    "Mount Chiliad Store",
    "toggle",
@@ -21505,7 +21932,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
 
 
 
-block83 =
+settings.toggle["block83"] =
    menu.add_feature(
    "Paleto Bay Garage",
    "toggle",
@@ -21618,7 +22045,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
 
 
 
-block84 =
+settings.toggle["block84"] =
    menu.add_feature(
    "Paleto Discount Store",
    "toggle",
@@ -21731,7 +22158,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
 
 
 
-block85 =
+settings.toggle["block85"] =
    menu.add_feature(
    "Paleto Barber Shop",
    "toggle",
@@ -21844,7 +22271,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
 
 
 
-block86 =
+settings.toggle["block86"] =
    menu.add_feature(
    "Paleto Barber Tatto Parlor",
    "toggle",
@@ -21958,7 +22385,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
 
 
 
-block87 =
+settings.toggle["block87"] =
    menu.add_feature(
    "Paleto Gun Store",
    "toggle",
@@ -22071,7 +22498,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
 
 
 
-block88 =
+settings.toggle["block88"] =
    menu.add_feature(
    "Chumash Store",
    "toggle",
@@ -22184,7 +22611,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
 
 
 
-block89 =
+settings.toggle["block89"] =
    menu.add_feature(
    "Chumash Tattoo Parlor",
    "toggle",
@@ -22297,7 +22724,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
 
 
 
-block90 =
+settings.toggle["block90"] =
    menu.add_feature(
    "Chumash Store",
    "toggle",
@@ -22410,7 +22837,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
 
 
 
-block91 =
+settings.toggle["block91"] =
    menu.add_feature(
    "Canyon Store",
    "toggle",
@@ -22523,7 +22950,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
 
 
 
-block92 =
+settings.toggle["block92"] =
    menu.add_feature(
    "Ocean HWY Store",
    "toggle",
@@ -22637,7 +23064,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
 
 
 
-block93 =
+settings.toggle["block93"] =
    menu.add_feature(
    "Morningwood Store",
    "toggle",
@@ -22749,7 +23176,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
 )
 
 
-block94 =
+settings.toggle["block94"] =
    menu.add_feature(
    "Morningwood Cloths Store",
    "toggle",
@@ -22863,7 +23290,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
 
 
 
-block95 =
+settings.toggle["block95"] =
    menu.add_feature(
    "Del Perro Cloths Store",
    "toggle",
@@ -22976,7 +23403,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
 
 
 
-block96 =
+settings.toggle["block96"] =
    menu.add_feature(
    "Vespucci Cloths Store",
    "toggle",
@@ -23089,7 +23516,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
 
 
 
-block97 =
+settings.toggle["block97"] =
    menu.add_feature(
    "Benny's Chop Shop",
    "toggle",
@@ -23202,7 +23629,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
 
 
 
-block98 =
+settings.toggle["block98"] =
    menu.add_feature(
    "Strawberry Store",
    "toggle",
@@ -23316,7 +23743,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
 
 
 
-block99 =
+settings.toggle["block99"] =
    menu.add_feature(
    "Strawberry Cloth Store",
    "toggle",
@@ -23429,7 +23856,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
 
 
 
-block100 =
+settings.toggle["block100"] =
    menu.add_feature(
    "Strawberry Strip Club",
    "toggle",
@@ -23541,7 +23968,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
 )
 
 
-block101 =
+settings.toggle["block101"] =
    menu.add_feature(
    "Staircase Cayo Flight",
    "toggle",
@@ -23652,7 +24079,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
    end)
 
 
-   block102 =
+   settings.toggle["block102"] =
    menu.add_feature(
    "Cayo Perico Beach Party",
    "toggle",
@@ -23762,7 +24189,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
        end
    end)
 
-   block103 =
+   settings.toggle["block103"] =
    menu.add_feature(
    "Cayo Perico Beach Party Dance",
    "toggle",
@@ -23873,7 +24300,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
    end)
 
 
-   block104 =
+   settings.toggle["block104"] =
    menu.add_feature(
    "Leaving Cayo Perico",
    "toggle",
@@ -23985,7 +24412,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
 
 
 
-   block105 =
+   settings.toggle["block105"] =
    menu.add_feature(
    "Cypress Flats Gun Store",
    "toggle",
@@ -24097,7 +24524,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
 
 
 
-   block106 =
+   settings.toggle["block106"] =
    menu.add_feature(
    "Orbital Cannon.",
    "toggle",
@@ -24201,7 +24628,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
 
 
 
-   block107 =
+   settings.toggle["block107"] =
    menu.add_feature(
    "LS Custom Burton.",
    "toggle",
@@ -24311,7 +24738,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
        end
    end)
 
-   block108 =
+   settings.toggle["block108"] =
    menu.add_feature(
    "Prison Nuke",
    "toggle",
@@ -24421,7 +24848,7 @@ getplayerwantedlevel = tostring(player.get_player_wanted_level(pid))
        end
    end)
 
-   block109 =
+   settings.toggle["block109"] =
    menu.add_feature(
    "Casino Car Meet",
    "toggle",
@@ -24773,10 +25200,6 @@ translatelib.listeners = {
 	exit = {}
 }
 
-function is_str(f, str)
-	return f.str_data[f.value + 1] == str
-end
-
 function split_string(str, size) 
         settings.assert(size >= 4, "Failed to split string. Split size must be 4 or more.", str, size)
         local strings <const> = {}
@@ -25056,7 +25479,7 @@ blocks = menu.add_feature("Block Areas Option", "parent", Protections.id)
 Malicious = menu.add_feature("Malicious Option", "parent", Protections.id)
 --Sub Menu Tabs End
 
-
+settings.toggle["30k CEO"] =
 menu.add_feature("30k CEO Loop", "toggle", Bank.id, function(f)
 	menu.create_thread(function()
 		while f.on do
@@ -26026,7 +26449,7 @@ end):set_str_data({
 })
 --Rockstargames Chat End
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-overlay =
+settings.toggle["Enable Overlay"] =
 menu.add_feature("Enable Overlay", "toggle", misc.id, function(f)
     if f.on then
         while f.on do
@@ -26077,9 +26500,8 @@ menu.add_feature("Enable Overlay", "toggle", misc.id, function(f)
         end
     end
 end)
-overlay.on = true
 
-TP2 =
+settings.toggle["Auto Waypoint"] =
 menu.add_feature("Auto Waypoint Tp", "toggle", misc.id, function(f)
 	if f.on then
 		while f.on do
@@ -26137,9 +26559,8 @@ menu.add_feature("Auto Waypoint Tp", "toggle", misc.id, function(f)
 		end
 	end
 end)
-TP2.on = true
 
-RapidRespawn =
+settings.toggle["Rapid Respawn"] =
 menu.add_feature("Rapid Respawn", "toggle", misc.id, function(f)
 	if f.on then
 		while f.on do
@@ -26164,12 +26585,11 @@ menu.add_feature("Rapid Respawn", "toggle", misc.id, function(f)
 		end
 	end
 end)
-RapidRespawn.on = false
 
 
 local IsPlayerDead = {}
 local IsPlayerAlive = {}
-killtracker =
+settings.toggle["Kill Tracker"] =
     menu.add_feature("Kill Tracker", "toggle", misc.id, function(f, pid)
         if f.on then
             while f.on do
@@ -26207,21 +26627,20 @@ killtracker =
             end
         end
     end)
-killtracker.on = true
 
-
-enableLog = 
+sessionLogger = 
    menu.add_feature("Session Logger", "toggle", misc.id, function(feat)
         if feat.on then
-            enableLog = true;
+            sessionLogger = true;
         else
-            enableLog = false;
+            sessionLogger = false;
         end
     end)
-    enableLog.on = true
- --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------   
+    sessionLogger.on = true
+
+    --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------   
 --Character Animation Start
-  animate =
+settings.toggle["Lua Name Animation"] =
  menu.add_feature(
  "lua name animation", 
  "toggle",
@@ -26246,7 +26665,7 @@ enableLog =
      end
  end
 )
-animate.on = true
+
 --Animation End
 -----------------------------------------------------------------------------------Emotes Start------------------------------------------------------------------------------------
 --Emotes Start
@@ -43818,7 +44237,7 @@ end)
 --Settings Start
 
 
-Disable =
+settings.toggle["Disable SharkCards"] =
 menu.add_feature("Disable SharkCards/Stunt jumps ", "toggle", misc.id, function(f)
     if f.on then
         native.call(0xD79185689F8FD5DF, false)
@@ -43828,19 +44247,16 @@ menu.add_feature("Disable SharkCards/Stunt jumps ", "toggle", misc.id, function(
         native.call(0x9641A9FF718E9C5E, true)
     end
     end)
-Disable.on = true
 
-
-Disablerecording =
+settings.toggle["Disable Rec"]  =
 menu.add_feature("Disable Game Recording", "toggle", misc.id, function(f)
     while f.on do
         native.call(0xEB2D525B57F42B40)
         system.wait()
     end
 end)
-Disablerecording.on = true
 
-
+settings.toggle["Session Chat Flooder"]  =
 menu.add_feature("Session Chat Flooder", "toggle", misc.id, function(f)
     if f.on then
 		while f.on do
@@ -43853,21 +44269,21 @@ menu.add_feature("Session Chat Flooder", "toggle", misc.id, function(f)
 end)
 
 
-DisableCS = menu.add_feature("Disable Cutscenes", "toggle", misc.id, function(feat)
+settings.toggle["Disable CS"] = menu.add_feature("Disable Cutscenes", "toggle", misc.id, function(feat)
 	if feat.on then
 		cutscene.is_cutscene_playing(cutscene.stop_cutscene_immediately())
 	end
 	return HANDLER_CONTINUE
 end)
 
-local DisableHud = menu.add_feature("Disable Mini-Map", "toggle", misc.id, function(feat)
+settings.toggle["Disable MinMap"] = menu.add_feature("Disable Mini-Map", "toggle", misc.id, function(feat)
 	if feat.on then
 		ui.hide_hud_and_radar_this_frame()
 	end
 	return HANDLER_CONTINUE
 end) 
 
-local DisableHud = menu.add_feature("Disable Vehicle Information", "toggle", misc.id, function(feat)
+settings.toggle["Disable VehInfo"] = menu.add_feature("Disable Vehicle Information", "toggle", misc.id, function(feat)
 	if feat.on then
 		ui.hide_hud_component_this_frame(6)
 		ui.hide_hud_component_this_frame(8)
@@ -43875,7 +44291,7 @@ local DisableHud = menu.add_feature("Disable Vehicle Information", "toggle", mis
 	return HANDLER_CONTINUE
 end)
 
-local DisableHud = menu.add_feature("Disable On Screen Information", "toggle", misc.id, function(feat)
+settings.toggle["Disable OSI"] = menu.add_feature("Disable On Screen Information", "toggle", misc.id, function(feat)
 	if feat.on then
 		ui.hide_hud_component_this_frame(5)
 		ui.hide_hud_component_this_frame(10)
@@ -43887,7 +44303,7 @@ local DisableHud = menu.add_feature("Disable On Screen Information", "toggle", m
 end)
 
 
-local DisableHud = menu.add_feature("Disable Location Information", "toggle", misc.id, function(feat)
+settings.toggle["Disable LI"] = menu.add_feature("Disable Location Information", "toggle", misc.id, function(feat)
 	if feat.on then
 		ui.hide_hud_component_this_frame(7)
 		ui.hide_hud_component_this_frame(9)
@@ -43895,7 +44311,7 @@ local DisableHud = menu.add_feature("Disable Location Information", "toggle", mi
 	return HANDLER_CONTINUE
 end)
 
-local DisableHud = menu.add_feature("Disable Miscellaneous Information", "toggle", misc.id, function(feat)
+settings.toggle["Disable Misc Info"] = menu.add_feature("Disable Miscellaneous Information", "toggle", misc.id, function(feat)
 	if feat.on then
 		ui.hide_hud_component_this_frame(1)
 		ui.hide_hud_component_this_frame(2)
@@ -43909,7 +44325,7 @@ local DisableHud = menu.add_feature("Disable Miscellaneous Information", "toggle
 	return HANDLER_CONTINUE
 end)
 
-local DisableHud = menu.add_feature("Disable Menu Notifications", "toggle", misc.id, function(feat)
+settings.toggle["Disable Menu Notif"] = menu.add_feature("Disable Menu Notifications", "toggle", misc.id, function(feat)
 	if feat.on then
 		menu.clear_all_notifications()
 	end
@@ -43917,7 +44333,7 @@ local DisableHud = menu.add_feature("Disable Menu Notifications", "toggle", misc
 end)
 
 
-feature = menu.add_feature("Display OS Time", "toggle", misc.id, function(f)
+settings.toggle["Display OS Time"] = menu.add_feature("Display OS Time", "toggle", misc.id, function(f)
 	if f.on then
     	while f.on do
     	    system.wait(0)
@@ -43932,7 +44348,7 @@ feature = menu.add_feature("Display OS Time", "toggle", misc.id, function(f)
 	end
 end)
 
-local DisableHud = menu.add_feature("Game Notifcation Cleanup", "toggle", misc.id, function(feat)
+settings.toggle["Game Notif Cleanup"] = menu.add_feature("Game Notifcation Cleanup", "toggle", misc.id, function(feat)
 	if feat.on then
 		ui.remove_notification(ui.get_current_notification())
 	end
@@ -43944,6 +44360,7 @@ end)
 -------------------------------------------------------------------Settings End-----------------------------------------------------------------------------
 --Protections Start
 
+settings.toggle["Anti Crash Cam"] =
 menu.add_feature("Anti Crash Cam", "toggle", Protex.id, function(f)
 	if f.on then
 		anti_crash_cam_pos = player.get_player_coords(player.player_id())
@@ -44170,45 +44587,6 @@ settings.toggle["Log modders"].data = {
     not_modder_flag_tracker = {},
     recently_logged = {}
 }
-
-local essentials = {}
-
-function essentials.ipv4_to_dec(...)
-	local ip <const> = ...
-	local dec = 0
-	for octet in ip:gmatch("%d+") do 
-		dec = octet + dec << 8 
-	end
-	return math.ceil(dec)
-end
-
-essentials.notif_colors = eventtrack.const({
-	red = 0xff0000ff,
-	yellow = 0xff00ffff,
-	blue = 0xffff0000,
-	green = 0xff00ff00,
-	purple = 0xff800080,
-	orange = 0xff0080ff,
-	brown = 0xff336699,
-	pink = 0xffff00ff
-})
-
-function essentials.msg(...)
-	local text <const>,
-	color <const>,
-	notifyOn <const>,
-	duration <const>,
-	header = ...
-	settings.assert(essentials.notif_colors[color], "Invalid color to notification.", color)
-	settings.assert(type(text) == "string", "Failed to send a notification.", text)
-	if notifyOn then
-		header = header or ""
-		if header == "" and Dracula_version then
-			header = "Dracula Menu".." "..Dracula_version
-		end
-		menu.notify(text, header, duration or 3, essentials.notif_colors[color])
-	end
-end
 
 function dec_to_ipv4(ip)
 	return string.format("%i.%i.%i.%i", ip >> 24 & 255, ip >> 16 & 255, ip >> 8 & 255, ip & 255)
@@ -44891,7 +45269,7 @@ end):set_str_data({
 
 Antiprotex = menu.add_feature("Anti Protex Option", "parent", Protex.id)
 
-Barcode =
+settings.toggle["Anti Barcode"] =
 menu.add_feature("Anti Barcode", "toggle", Antiprotex.id, function(f, pid)
 	if f.on then
 		while f.on do
@@ -44915,10 +45293,8 @@ menu.add_feature("Anti Barcode", "toggle", Antiprotex.id, function(f, pid)
 	if not f.on then
 	end
 end)
-Barcode.on = false
 
-
-Barcode2 =
+settings.toggle["Anti Barcode Shit Head"] =
 menu.add_feature("Anti Barcode Shit Head", "toggle", Antiprotex.id, function(f, pid)
 	if f.on then
 		while f.on do
@@ -44950,9 +45326,8 @@ menu.add_feature("Anti Barcode Shit Head", "toggle", Antiprotex.id, function(f, 
 		end
 	end
 end)
-Barcode2.on = false
 
-
+settings.toggle["Anti Explosive Sniper 2"] =
 menu.add_feature("Anti Explosive Sniper 2", "value_str", Antiprotex.id, function(f)
 	if f.on then
 		while f.on do
@@ -44990,9 +45365,10 @@ menu.add_feature("Anti Explosive Sniper 2", "value_str", Antiprotex.id, function
 			end
 		end
 	end
-end):set_str_data({"Remove Weapon", "Remove All Weapons", "Kick", "Freeze Kick"})
+end)
+settings.toggle["Anti Explosive Sniper 2"]:set_str_data({"Remove Weapon", "Remove All Weapons", "Kick", "Freeze Kick"})
 
-
+settings.toggle["Anti Oppressor Mk2"] = 
 menu.add_feature("Anti Oppressor Mk2", "value_str", Antiprotex.id, function(f)
 	if f.on then
 		while f.on do
@@ -45021,9 +45397,10 @@ menu.add_feature("Anti Oppressor Mk2", "value_str", Antiprotex.id, function(f)
 			end
 		end
 	end
-end):set_str_data({"Oppressor Mk2 Kick"})
+end)
+settings.toggle["Anti Oppressor Mk2"]:set_str_data({"Oppressor Mk2 Kick"})
 
-
+settings.toggle["Anti Oppressor Mk1"] =
 menu.add_feature("Anti Oppressor Mk1", "value_str", Antiprotex.id, function(f)
 	if f.on then
 		while f.on do
@@ -45052,9 +45429,10 @@ menu.add_feature("Anti Oppressor Mk1", "value_str", Antiprotex.id, function(f)
 			end
 		end
 	end
-end):set_str_data({"Oppressor Mk1 Kick"})
+end)
+settings.toggle["Anti Oppressor Mk1"]:set_str_data({"Oppressor Mk1 Kick"})
 
-
+settings.toggle["Anti Tank"] =
 menu.add_feature("Anti Tank", "value_str", Antiprotex.id, function(f)
 	if f.on then
 		while f.on do
@@ -45083,9 +45461,10 @@ menu.add_feature("Anti Tank", "value_str", Antiprotex.id, function(f)
 			end
 		end
 	end
-end):set_str_data({"Rhino Kick"})
+end)
+settings.toggle["Anti Tank"]:set_str_data({"Rhino Kick"})
 
-
+settings.toggle["Anti Khanjali Tank"] =
 menu.add_feature("Anti khanjali Tank", "value_str", Antiprotex.id, function(f)
 	if f.on then
 		while f.on do
@@ -45114,9 +45493,10 @@ menu.add_feature("Anti khanjali Tank", "value_str", Antiprotex.id, function(f)
 			end
 		end
 	end
-end):set_str_data({"khanjali Kick"})
+end)
+settings.toggle["Anti Khanjali Tank"]:set_str_data({"khanjali Kick"})
 
-
+settings.toggle["Anti Terrorbyte"] =
 menu.add_feature("Anti Terrobyte", "value_str", Antiprotex.id, function(f)
 	if f.on then
 		while f.on do
@@ -45145,10 +45525,10 @@ menu.add_feature("Anti Terrobyte", "value_str", Antiprotex.id, function(f)
 			end
 		end
 	end
-end):set_str_data({"Terrobyte Kick"})
+end)
+settings.toggle["Anti Terrorbyte"]:set_str_data({"Terrobyte Kick"})
 
-
-
+settings.toggle["Anti Minitank"] = 
 menu.add_feature("Anti minitank", "value_str", Antiprotex.id, function(f)
 	if f.on then
 		while f.on do
@@ -45177,10 +45557,10 @@ menu.add_feature("Anti minitank", "value_str", Antiprotex.id, function(f)
 			end
 		end
 	end
-end):set_str_data({"Minitank Kick"})
+end)
+settings.toggle["Anti Minitank"]:set_str_data({"Minitank Kick"})
 
-
-
+settings.toggle["Anti APC"] =
 menu.add_feature("Anti APC", "value_str", Antiprotex.id, function(f)
 	if f.on then
 		while f.on do
@@ -45209,8 +45589,10 @@ menu.add_feature("Anti APC", "value_str", Antiprotex.id, function(f)
 			end
 		end
 	end
-end):set_str_data({"APC Kick"})
+end)
+settings.toggle["Anti APC"]:set_str_data({"APC Kick"})
 
+settings.toggle["Anti Hydra"] =
 menu.add_feature("Anti Hydra", "value_str", Antiprotex.id, function(f)
 	if f.on then
 		while f.on do
@@ -45239,9 +45621,10 @@ menu.add_feature("Anti Hydra", "value_str", Antiprotex.id, function(f)
 			end
 		end
 	end
-end):set_str_data({"Hydra Kick"})
+end)
+settings.toggle["Anti Hydra"]:set_str_data({"Hydra Kick"})
 
-
+settings.toggle["Anti Lazer"] =
 menu.add_feature("Anti Lazer", "value_str", Antiprotex.id, function(f)
 	if f.on then
 		while f.on do
@@ -45270,9 +45653,10 @@ menu.add_feature("Anti Lazer", "value_str", Antiprotex.id, function(f)
 			end
 		end
 	end
-end):set_str_data({"Lazer Kick"})
+end)
+settings.toggle["Anti Lazer"]:set_str_data({"Lazer Kick"})
 
-
+settings.toggle["Anti Savage"] =
 menu.add_feature("Anti Savage", "value_str", Antiprotex.id, function(f)
 	if f.on then
 		while f.on do
@@ -45301,9 +45685,10 @@ menu.add_feature("Anti Savage", "value_str", Antiprotex.id, function(f)
 			end
 		end
 	end
-end):set_str_data({"Savage Kick"})
+end)
+settings.toggle["Anti Savage"]:set_str_data({"Savage Kick"})
 
-
+settings.toggle["Anti Buzzard"] =
 menu.add_feature("Anti Buzzard", "value_str", Antiprotex.id, function(f)
 	if f.on then
 		while f.on do
@@ -45332,7 +45717,8 @@ menu.add_feature("Anti Buzzard", "value_str", Antiprotex.id, function(f)
 			end
 		end
 	end
-end):set_str_data({"Buzzard Kick"})
+end)
+settings.toggle["Anti Buzzard"]:set_str_data({"Buzzard Kick"})
 
 menu.add_feature("Fix Cain't Move", "action", Antiprotex.id, function(f)
 	if player.is_player_valid(player.player_id()) then
@@ -45413,49 +45799,6 @@ menu.notify("Dracula's Anti-Modder Detection Activated", "",  10, 0x6414F000)
 audio.play_sound_from_coord(-1, "LOSER", player.get_player_coords(player.player_id()), "HUD_AWARDS", false, 0, true)
 require("Dracula/Lib/Animation")
 
-function settings:initialize(...)
-	local file_path <const> = ...
-	assert(utils.file_exists(file_path), debug.traceback("Tried to initialize settings from a file that doesn't exist.", 2))
-	local file = io.open(file_path)
-	assert(file, debug.traceback("Failed to open settings file.", 2))
-	local str <const> = file:read("*a")
-	file:close()
-	local type <const>, tonumber <const> = type, tonumber
-	for name, setting in str:gmatch("([^\n\r]+)=([^\n\r]+)") do
-		local num <const> = tonumber(setting)
-		local setting_type <const> = type(self.default[name])
-		if setting_type == "number" then
-			setting = num
-		elseif setting == nil then
-			setting = self.default[name]
-		elseif setting_type == "boolean" then
-			setting = setting == "true"
-		end
-		self.in_use[name] = setting
-	end
-	local file = io.open(file_path, "a+")
-	file:setvbuf("full")
-	assert(io.type(file) == "file", debug.traceback("Failed to open settings file.", 2))
-	for setting_name, default in pairs(self.default) do
-		if self.in_use[setting_name] == nil then
-			self.in_use[setting_name] = default
-			file:write(string.format("%s=%s\n", setting_name, tostring(self.in_use[setting_name])))
-		end
-	end
-	file:close()
-	for name, feat in pairs(self.toggle) do
-		feat.on = self.in_use[name]
-	end
-	for name, feat in pairs(self.valuei) do
-		feat.value = self.in_use[name]
-	end
-	for name, feat in pairs(self.valuef) do
-		feat.value = self.in_use[name]
-	end
-	for _, feat in pairs(self.drive_style_toggles) do
-		feat.on = self.in_use["Drive style"] & feat.data == feat.data
-	end
-end
 settings:initialize(paths.home.."scripts\\Dracula\\draculasettings.ini")
 
 end, nil)

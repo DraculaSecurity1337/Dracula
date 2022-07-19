@@ -12,6 +12,7 @@
 ### 11. Script will now automatically dump data to database
 ### 12. Revamping menu system to make it more user friendly.
 ### 13. Fixing issue causing crashes..
+### 14. Added saving profiles
 ###
 ### It now shows deatiled information about the player upon entering proximity.
 ### When a player enters the proximity it will take weapons away temporarily.
