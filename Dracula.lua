@@ -4,7 +4,7 @@ if Dracula_version then
 end 
 
 --Set Version Here requeriment for the script to work
-Dracula_version = "20.970"
+Dracula_version = "20.971"
 
 menu.create_thread(function()
 
@@ -26628,15 +26628,15 @@ settings.toggle["Kill Tracker"] =
         end
     end)
 
-sessionLogger = 
+    enableLog = 
    menu.add_feature("Session Logger", "toggle", misc.id, function(feat)
         if feat.on then
-            sessionLogger = true;
+            enableLog = true;
         else
-            sessionLogger = false;
+            enableLog = false;
         end
     end)
-    sessionLogger.on = true
+    enableLog.on = true
 
     --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------   
 --Character Animation Start
