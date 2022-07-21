@@ -4,7 +4,7 @@ if Dracula_version then
 end 
 
 --Set Version Here requeriment for the script to work
-Dracula_version = "20.975"
+Dracula_version = "20.976"
 
 menu.create_thread(function()
 
@@ -44136,7 +44136,7 @@ settings.toggle["Anti chat spam"] = menu.add_feature("Anti chat spam", "value_st
                     else
                         adText = "Spamming"
                     end
-                    menu.notify("Player: "..player.get_player_name(event.player)"\nReason: Spamming\nAction: Kicked", "Advertiser Detected",  20, 0xff0000ff)
+                    menu.notify("Player: "..player.get_player_name(event.player).."\nReason: Spamming\nAction: Kicked", "Advertiser Detected",  20, 0xff0000ff)
 					tracker[scid] = nil
 					if is_str(f, "Kick & add to timeout") then
 						add_to_timeout(event.player)
