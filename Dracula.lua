@@ -4,7 +4,7 @@ if Dracula_version then
 end 
 
 --Set Version Here requeriment for the script to work
-Dracula_version = "20.976"
+Dracula_version = "20.977"
 
 menu.create_thread(function()
 
@@ -11777,7 +11777,7 @@ function essentials.msg(...)
 	if notifyOn then
 		header = header or ""
 		if header == "" and Dracula_version then
-			header = "Dracula Menu".." "..Dracula_version
+			header = "Modder Detection"
 		end
 		menu.notify(text, header, duration or 3, essentials.notif_colors[color])
 	end
