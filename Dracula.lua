@@ -4,7 +4,7 @@ if Dracula_version then
 end 
 
 --Set Version Here requeriment for the script to work
-Dracula_version = "20.973"
+Dracula_version = "20.974"
 
 menu.create_thread(function()
 
@@ -366,7 +366,7 @@ for _, properties in pairs({
         setting_name = "Auto Waypoint",
         setting = true
     },{
-        setting_name = "Rapid Respawn",
+        setting_name = "Vampiric Respawn",
         setting = false
     },{
         setting_name = "Kill Tracker",
@@ -12035,6 +12035,32 @@ settings.toggle["Vampiric Immortality"] =
     end
 
 )
+
+settings.toggle["Vampiric Respawn"] =
+menu.add_feature("Vampiric Respawn", "toggle", HealthOp.id, function(f)
+	if f.on then
+		while f.on do
+			system.yield(0)
+			if network.is_session_started() then
+				if entity.is_entity_dead(player.get_player_ped(player.player_id())) then
+					ped.resurrect_ped(player.get_player_ped(player.player_id()))
+					ped.set_ped_max_health(player.get_player_ped(player.player_id()), 328)
+					ped.set_ped_health(player.get_player_ped(player.player_id()), 328)
+					local success, spawn_point = gameplay.find_spawn_point_in_direction(player.get_player_coords(player.player_id()), player.get_player_coords(player.player_id()), (0))
+					if spawn_point ~= nil then
+						for i = 1, 50 do
+							entity.set_entity_coords_no_offset(player.get_player_ped(player.player_id()), spawn_point + v3(0, 0, 1))
+						end
+					else
+						for i = 1, 50 do
+							ped.clear_ped_tasks_immediately(player.get_player_ped(player.player_id()))
+						end
+					end
+				end
+			end
+		end
+	end
+end)
 
 --Health Options End
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -26706,31 +26732,6 @@ menu.add_feature("Auto Waypoint Tp", "toggle", misc.id, function(f)
 	end
 end)
 
-settings.toggle["Rapid Respawn"] =
-menu.add_feature("Rapid Respawn", "toggle", misc.id, function(f)
-	if f.on then
-		while f.on do
-			system.yield(0)
-			if network.is_session_started() then
-				if entity.is_entity_dead(player.get_player_ped(player.player_id())) then
-					ped.resurrect_ped(player.get_player_ped(player.player_id()))
-					ped.set_ped_max_health(player.get_player_ped(player.player_id()), 328)
-					ped.set_ped_health(player.get_player_ped(player.player_id()), 328)
-					local success, spawn_point = gameplay.find_spawn_point_in_direction(player.get_player_coords(player.player_id()), player.get_player_coords(player.player_id()), (0))
-					if spawn_point ~= nil then
-						for i = 1, 50 do
-							entity.set_entity_coords_no_offset(player.get_player_ped(player.player_id()), spawn_point + v3(0, 0, 1))
-						end
-					else
-						for i = 1, 50 do
-							ped.clear_ped_tasks_immediately(player.get_player_ped(player.player_id()))
-						end
-					end
-				end
-			end
-		end
-	end
-end)
 
 
 local IsPlayerDead = {}
