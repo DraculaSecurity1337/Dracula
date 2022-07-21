@@ -4,7 +4,7 @@ if Dracula_version then
 end 
 
 --Set Version Here requeriment for the script to work
-Dracula_version = "20.971"
+Dracula_version = "20.972"
 
 menu.create_thread(function()
 
@@ -413,7 +413,27 @@ for _, properties in pairs({
     },{
         setting_name = "Game Notif Cleanup",
         setting = false
-    }
+    },
+    {
+        setting_name = "Kick any vote kickers",
+        setting = false
+    },
+    {
+        setting_name = "Typing indicator",
+        setting = false
+    },
+    {
+		setting_name = "Anti chat spam",
+		setting = false
+	},
+    {
+		setting_name = "Force host", 
+		setting = false
+	},
+    {
+		setting_name = "Max number of people to kick in force host",
+		setting = 31
+	},
 }) do
 	settings:add_setting(properties)
 end
@@ -11718,6 +11738,13 @@ MU(IND .."", "toggle", Independance_day.id, function(IND)
 -- Settings
 
 local essentials = {}
+essentials.listeners = {
+	player_leave = {},
+	player_join = {},
+	chat = {},
+	exit = {}
+}
+essentials.nethooks = {}
 
 function essentials.ipv4_to_dec(...)
 	local ip <const> = ...
@@ -25987,7 +26014,57 @@ menu.add_feature("Crash Session Host", "action", Malicious.id, function(f, pid)
    entity.freeze_entity(player.get_player_ped(player.player_id()), false)
 end)
 
+do
+	local function get_people_in_front_of_person_in_host_queue()
+		if network.network_is_host() then
+			return
+		end
+		local hosts <const>, friends <const> = {}, {}
+		local player_host_priority <const> = player.get_player_host_priority(player.player_id())
+		for pid in Draculaplayers() do
+			if player.get_player_host_priority(pid) <= player_host_priority and not player.is_player_host(pid) then
+				hosts[#hosts + 1] = pid
+				if network.is_scid_friend(player.get_player_scid(pid)) then
+					friends[#friends + 1] = pid
+				end
+			end
+		end
+		hosts[#hosts + 1] = player.get_host() ~= player.player_id() and player.get_host() or nil
+		return hosts, friends
+	end
 
+	local function get_host(...)
+		local hosts <const>, friends <const> = get_people_in_front_of_person_in_host_queue()
+		if friends and #friends > 0 then
+			essentials.msg("One of the people further in host queue is your friend! Cancelled.", "red", true)
+		elseif hosts then
+			for _, pid in pairs(hosts) do
+                network.force_remove_player(pid)
+				system.yield(0)
+			end
+		end
+	end
+
+	menu.add_feature("Get host", "action", HostOp.id, function(f)
+		get_host()
+	end)
+
+	settings.toggle["Force host"] = menu.add_feature("Get host automatically", "toggle", HostOp.id, function(f)
+		while f.on do
+			system.yield(0)
+			local players_in_queue <const>, friends_in_queue <const> = get_people_in_front_of_person_in_host_queue()
+			if players_in_queue and #players_in_queue <= settings.valuei["Max number of people to kick in force host"].value then
+				get_host()
+				system.yield(500)
+			end
+		end
+	end)
+end
+
+settings.valuei["Max number of people to kick in force host"] = menu.add_feature("Max kick for auto host", "autoaction_value_i", HostOp.id)
+settings.valuei["Max number of people to kick in force host"].max, settings.valuei["Max number of people to kick in force host"].min, settings.valuei["Max number of people to kick in force host"].mod = 31, 1, 1
+
+settings.toggle["Ghost Session"] = 
 menu.add_feature("Ghost Session", "toggle", HostOp.id, function(f)
 	if f.on then
 		while f.on do
@@ -26449,6 +26526,75 @@ end):set_str_data({
 })
 --Rockstargames Chat End
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+local stuff = {}
+stuff.ChatSpyTable = {}
+
+stuff.scriptHookFunction = function(source, target, params, count, stuff)
+	if params[1] == 747270864 then
+		if not stuff.ChatSpyTable.pidTable[source] then
+			stuff.ChatSpyTable.total = stuff.ChatSpyTable.total + 1
+			stuff.ChatSpyTable.pidTable[source] = {currentPos = stuff.ChatSpyTable.total, string = " is typing...", alpha = 255}
+			stuff.ChatSpyTable.pidTable[source].id = menu.create_thread(function()
+				stuff.typingThreadCallback(stuff, source)
+			end, nil)
+		end
+	elseif params[1] == 3304008971 then
+		if stuff.ChatSpyTable.pidTable[source] then
+			stuff.ChatSpyTable.threads[#stuff.ChatSpyTable.threads + 1] = menu.create_thread(function()
+				stuff.deleteThreadCallback(stuff, source)
+			end, nil)
+		end
+	end
+end
+
+stuff.typingThreadCallback = function(stuff, source)
+	while true do
+		if player.get_player_name(source) and stuff.ChatSpyTable.pidTable[source].string then
+            menu.notify(tostring(player.get_player_name(source))..stuff.ChatSpyTable.pidTable[source].string, "Typing Indicator", 4, 0x64FA7800)
+		end
+		system.wait(0)
+	end
+end
+
+stuff.deleteThreadCallback = function(stuff, source)
+	stuff.ChatSpyTable.pidTable[source].string = " closed chat box."
+	while stuff.ChatSpyTable.pidTable[source].alpha > 0 do
+		stuff.ChatSpyTable.pidTable[source].alpha = stuff.ChatSpyTable.pidTable[source].alpha - 5
+		system.wait(10)
+	end
+	stuff.ChatSpyTable.total = stuff.ChatSpyTable.total - 1
+	for k, v in pairs(stuff.ChatSpyTable.pidTable) do
+		if type(v) == "table" then
+			if v.currentPos > stuff.ChatSpyTable.pidTable[source].currentPos then
+				v.currentPos = v.currentPos - 1
+			end
+		end
+	end
+	menu.delete_thread(stuff.ChatSpyTable.pidTable[source].id)
+	stuff.ChatSpyTable.pidTable[source] = nil
+end
+
+settings.toggle["Typing indicator"] = 
+menu.add_feature("Typing Indicator", "toggle", misc.id, function(f)
+	if f.on then
+		stuff.ChatSpyTable = {pidTable = {}, threads = {}}
+		stuff.ChatSpyTable.total = -1
+		stuff.ChatSpyTable.hook = hook.register_script_event_hook(function(source, target, params, count)
+			stuff.scriptHookFunction(source, target, params, count, stuff)
+		end)
+	else
+		for _, thread in pairs(stuff.ChatSpyTable.threads) do
+			menu.delete_thread(thread)
+		end
+		for _, pidTable in pairs(stuff.ChatSpyTable.pidTable) do
+			menu.delete_thread(pidTable.id)
+		end
+		hook.remove_script_event_hook(stuff.ChatSpyTable.hook)
+		stuff.ChatSpyTable = {}
+	end
+end)
+
 settings.toggle["Enable Overlay"] =
 menu.add_feature("Enable Overlay", "toggle", misc.id, function(f)
     if f.on then
@@ -44360,6 +44506,94 @@ end)
 -------------------------------------------------------------------Settings End-----------------------------------------------------------------------------
 --Protections Start
 
+function add_to_timeout(pid)
+	settings.assert(pid ~= player.player_id(), "Tried to add yourself to join timeout.")
+end
+
+settings.toggle["Anti chat spam"] = menu.add_feature("Anti chat spam", "value_str", Protex.id, function(f)
+	if f.on then
+		if essentials.listeners["chat"]["anti spam"] then
+			return
+		end
+		local tracker <const> = {}
+		essentials.listeners["chat"]["anti spam"] = add_chat_event_listener(function(event)
+			local scid <const> = player.get_player_scid(event.player)
+			if player.is_player_valid(event.player) and player.can_player_be_modder(event.player) and event.player ~= player.player_id() and is_not_friend(event.player) then
+				local msg_increment 	 <const> = (utf8.len(event.body) or #event.body) + 85 -- People may send a message that contains invalid utf8 seq, causing utf8.len to return nil.
+				local in_a_row_increment <const> = (utf8.len(event.body) or #event.body) >= 10 and 1.0 or 0.7
+				
+				if not tracker[scid] then
+					tracker[scid] = {
+						same_in_a_row_count = in_a_row_increment,
+						previous_msg = event.body,
+						fast_spam_count = msg_increment,
+						time_since_last_msg = utils.time_ms() + 600
+					}
+					return
+				end
+
+				if tracker[scid].previous_msg == event.body then
+					tracker[scid].same_in_a_row_count = tracker[scid].same_in_a_row_count + in_a_row_increment
+				else
+					tracker[scid].same_in_a_row_count = in_a_row_increment
+					tracker[scid].previous_msg = event.body
+				end
+
+				if utils.time_ms() > tracker[scid].time_since_last_msg then
+					tracker[scid].fast_spam_count = msg_increment
+				else
+					tracker[scid].fast_spam_count = tracker[scid].fast_spam_count + msg_increment
+				end
+				tracker[scid].time_since_last_msg = utils.time_ms() + 600
+
+				if tracker[scid].same_in_a_row_count >= 3.0 or tracker[scid].fast_spam_count >= 500 then
+                    if string.find(event.body, ".",0,true) then
+                        adText = "Fraudulent Spam Advertising"
+                    else
+                        adText = "Spamming"
+                    end
+                    menu.notify("Player: "..player.get_player_name(event.player)"\nReason: "..adText.."\nAction: Kicked", "Advertiser Detected",  20, 0xff0000ff)
+					essentials.msg(string.format("%s %s", player.get_player_name(event.player), "kicked for spamming chat."), "Red", true, 6)
+					tracker[scid] = nil
+					if is_str(f, "Kick & add to timeout") then
+						add_to_timeout(event.player)
+					end
+                    network.force_remove_player(event.player)
+				end
+			end
+		end)
+	else
+		event.remove_event_listener("chat", essentials.listeners["chat"]["anti spam"])
+		essentials.listeners["chat"]["anti spam"] = nil			
+	end
+end)
+settings.valuei["Anti chat spam reaction"] = settings.toggle["Anti chat spam"]
+settings.valuei["Anti chat spam reaction"]:set_str_data({
+	"Kick",
+	"Kick & add to timeout"
+})
+
+settings.toggle["Kick any vote kickers"] = menu.add_feature("Kick any vote kickers", "toggle", Protex.id, function(f)
+	if f.on then
+		essentials.nethooks["vote_kick_protex"] = hook.register_net_event_hook(function(...)
+			local sender <const>, target <const>, event <const> = ...
+			if event == enums.net_event_ids.KICK_VOTES_EVENT
+			and sender ~= player.player_id()
+			and target == player.player_id()
+			and player.can_player_be_modder(sender)
+			and is_not_friend(sender) then
+				local player_name <const> = player.get_player_name(sender) -- Player is most likely gone after kick
+				local scid <const> = player.get_player_scid(sender)
+                network.force_remove_player(sender)
+				essentials.msg(string.format("%s %s", player_name, "sent vote kick. Kicking player..."), "orange", true)
+			end
+		end)
+	else
+		hook.remove_net_event_hook(essentials.nethooks["vote_kick_protex"])
+		essentials.nethooks["vote_kick_protex"] = nil
+	end
+end)
+
 settings.toggle["Anti Crash Cam"] =
 menu.add_feature("Anti Crash Cam", "toggle", Protex.id, function(f)
 	if f.on then
@@ -45794,7 +46028,7 @@ event.add_event_listener("player_join", function(e)
     end 
 end)
 
-menu.notify("Welcome to Dracula\n\nDeveloper: odín, Xphos\nVersion: "..Dracula_version.."\nCopyright (C) 1994-2022 Lua.org, PUC-Rio", "",  20, 0xffb700)
+menu.notify("Welcome to Dracula\n\nDeveloper: odín, Xphos\nVersion: "..Dracula_version.."\nCopyright (C) 1994-2022 Lua.org, PUC-Rio", "",  20, 0xff0000ff)
 menu.notify("Dracula's Anti-Modder Detection Activated", "",  10, 0x6414F000)
 audio.play_sound_from_coord(-1, "LOSER", player.get_player_coords(player.player_id()), "HUD_AWARDS", false, 0, true)
 require("Dracula/Lib/Animation")
