@@ -14,6 +14,9 @@
 ### 13. Fixing issue causing crashes..
 ### 14. Added saving profiles
 ### 15. Added host automatic, anti spammer, etc
+### 16. Added new vampire theme menu.
+### 17. Removed all crash options.
+### 18. renamed alot of options.
 ###
 ### It now shows deatiled information about the player upon entering proximity.
 ### When a player enters the proximity it will take weapons away temporarily.
