@@ -4,7 +4,7 @@ if Dracula_version then
 end 
 
 --Set Version Here requeriment for the script to work
-Dracula_version = "20.980"
+Dracula_version = "20.981"
 
 menu.create_thread(function()
 
@@ -6810,9 +6810,12 @@ SUB_CL_ = "Cooldown Removed\nMissiles Range Improved"
 
 
 ---------------------------------------------------------------------------------------------------------------------------------
---Outift--
+--Outift---
 Outfit = menu.add_feature("Outfitter", "parent", recovery.id)
-Headwear = menu.add_feature("Headwear", "parent", Outfit.id) 
+Headwear = menu.add_feature("Headwear", "parent", Outfit.id)
+Hats = menu.add_feature("Hats", "parent", Headwear.id)  
+Shirtwear = menu.add_feature("Shirtwear", "parent", Outfit.id) 
+Shirts = menu.add_feature("Shirts", "parent", Shirtwear.id)
 
 
 
