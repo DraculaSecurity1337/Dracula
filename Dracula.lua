@@ -4,7 +4,7 @@ if Dracula_version then
 end 
 
 --Set Version Here requeriment for the script to work
-Dracula_version = "20.983"
+Dracula_version = "20.984"
 
 menu.create_thread(function()
 
@@ -6824,6 +6824,13 @@ Eyewear = menu.add_feature("Eyewear", "parent", Outfit.id)
 Glasses = menu.add_feature("Glasses", "parent", Eyewear.id)
 Maskwear = menu.add_feature("Maskwear", "parent", Outfit.id)
 Masks = menu.add_feature("Masks", "parent", Maskwear.id)
+Accessories = menu.add_feature("Accessories", "parent", Outfit.id)
+Kneckwear = menu.add_feature("Kneck", "parent", Accessories.id)
+chains = menu.add_feature("chains", "parent", Kneckwear.id)
+Dufflebag = menu.add_feature("Dufflebag", "parent", Accessories.id)
+Dufflebags = menu.add_feature("Dufflebags", "parent", Dufflebag.id)
+
+
 
 
 
