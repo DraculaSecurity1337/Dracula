@@ -17,7 +17,7 @@
 ### 16. Added new vampire theme menu.
 ### 17. Removed all crash options.
 ### 18. renamed alot of options.
-### 19. Working on outfitter....
+### 19. Working on outfitter.
 ###
 ###
 ### It now shows deatiled information about the player upon entering proximity.
