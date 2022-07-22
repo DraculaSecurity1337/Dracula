@@ -3,8 +3,8 @@ if Dracula_version then
 	return
 end 
 
---Set Version Here requeriment for the script to work
-Dracula_version = "20.985"
+--Set Version Here requeriment for the script to work--
+Dracula_version = "20.986"
 
 menu.create_thread(function()
 
